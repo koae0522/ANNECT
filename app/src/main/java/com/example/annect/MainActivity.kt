@@ -1,26 +1,15 @@
 package com.example.annect
 
-import android.R
 import android.os.Build
 import android.os.Bundle
 import android.view.View
 import android.view.WindowManager
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Card
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.example.annect.ui.theme.ANNECTTheme
 
@@ -56,7 +45,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    Greeting("Android")
+                    AnnectScreen()
                 }
             }
         }
@@ -66,43 +55,5 @@ class MainActivity : ComponentActivity() {
 
 }
 
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Column(modifier = modifier.displayCutoutPadding(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally,) {
-        Card(shape = MaterialTheme.shapes.medium,
-                modifier = modifier.padding(10.dp)) {
-            Text(
-                text = "DEATH†ZIGOQ ",
-                style = MaterialTheme.typography.titleLarge,
-                //modifierにdisplayCutoutPadding()をつけるとカメラの内側に描画される
-                modifier = modifier.displayCutoutPadding().padding(3.dp)
-            )
 
-        }
-        Card(shape = MaterialTheme.shapes.medium,
-            modifier = modifier.padding(10.dp)) {
-            Text(
-                text = "今日も俺は荒野を爆走する\n" +
-                        "わずかな希望を停留させる人々を乗せて､共に戦いながら\n" +
-                        "地の果てにはあるだろう､穏やかな生活を取り戻せる場所に辿り着くまで",
-                style = MaterialTheme.typography.bodyLarge,
-                //modifierにdisplayCutoutPadding()をつけるとカメラの内側に描画される
-                modifier = modifier.displayCutoutPadding().padding(3.dp)
-            )
-
-        }
-    }
-
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ANNECTTheme {
-        Greeting("Android")
-    }
-}
 
