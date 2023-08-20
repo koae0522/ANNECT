@@ -7,6 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.painterResource
 import com.example.annect.R
 
+//Animaのデータ　値はすべて初期値
 data class AnimaData(
 
     //体のパーツ
@@ -25,6 +26,7 @@ data class AnimaData(
     var name:String="misuzu"
 )
 
+//partsを渡してAnimaを表示する関数
 @Composable
 fun DisplayAnima(parts:MutableMap<String, Int>){
     Box(){
@@ -33,5 +35,4 @@ fun DisplayAnima(parts:MutableMap<String, Int>){
         Image(painter = painterResource(id = parts["mouth"] ?: 0), contentDescription = null)
         Image(painter = painterResource(id = parts["accessory"] ?: 0), contentDescription = null)
     }
-
 }
