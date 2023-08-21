@@ -1,11 +1,8 @@
 package com.example.annect
 
-import androidx.annotation.StringRes
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.modifier.modifierLocalConsumer
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,6 +12,7 @@ import com.example.annect.ui.ConnectScreen
 import com.example.annect.ui.CreateScreen
 import com.example.annect.ui.HomeScreen
 import com.example.annect.ui.MiniGameScreen
+
 
 //画面の名前を追加
 enum class AnnectScreen(){
@@ -35,7 +33,8 @@ fun AnnectScreen(
     //画面遷移の設定
     NavHost(
         navController = navController,
-        startDestination =  AnnectScreen.Home.name
+        //最初はCreateScreenに
+        startDestination =  AnnectScreen.Create.name
     ){
 
         //画面ごとにcomposableを書いて、呼び出したいScreenの@Composable関数を呼び出す
@@ -44,16 +43,22 @@ fun AnnectScreen(
         composable(route = AnnectScreen.Home.name){
 
             HomeScreen(
-                onMiniGameButtonClicked={navController.navigate("MiniGame")},
-                onConnectButtonClicked={navController.navigate("Connect")},
+                onMiniGameButtonClicked ={navController.navigate("MiniGame")},
+                onConnectButtonClicked ={navController.navigate("Connect")},
                 //viewModelから値を渡す
                 name = animaUiState.name,
-                parts= animaUiState.animaParts)
+                body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory)
         }
 
         //Create画面
         composable(route = AnnectScreen.Create.name){
-            CreateScreen(onClickButton = {navController.navigate("Home")})
+            CreateScreen(
+                onNextButtonClicked = {navController.navigate("Home")},
+                //uiStateからAnimaのパーツを渡す
+                body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
+                //矢印が押された時の関数を呼び出す
+                name = animaUiState.name,
+                onArrowButtonClicked = {animaViewModel.ChangeAnimaParts(it)})
         }
 
         //MiniGame画面
