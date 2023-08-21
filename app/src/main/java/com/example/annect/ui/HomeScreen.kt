@@ -4,22 +4,16 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role.Companion.Image
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.annect.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
@@ -29,20 +23,23 @@ import androidx.compose.ui.unit.dp
 
 
 @Composable
-fun HomeScreen(onMiniGameButtonClicked: ()->Unit = {},onConnectButtonClicked: ()->Unit = {},
-               name:String, parts:MutableMap<String, Int>){
+fun HomeScreen(
+    onMiniGameButtonClicked: ()->Unit = {}, onConnectButtonClicked: ()->Unit = {},
+    name:String,body:Int,eye:Int,mouth:Int,accessory:Int
+){
 
     Box(){
 
         //背景の設定
-        Image(painter = painterResource(id = R.drawable.room), contentDescription = null,
+        Image(
+            painter = painterResource(id = R.drawable.room),
+            contentDescription = null,
+
             //透明度50%
-            modifier = Modifier.fillMaxSize().graphicsLayer {
-            this.alpha = 0.5f
-        },
+            modifier = Modifier.fillMaxSize().
+            graphicsLayer { this.alpha = 0.5f },
             //画面いっぱいに表示
             contentScale = ContentScale.FillBounds)
-
 
         Column(
             modifier = Modifier
@@ -67,7 +64,7 @@ fun HomeScreen(onMiniGameButtonClicked: ()->Unit = {},onConnectButtonClicked: ()
                 }
 
                 //Anima表示
-                DisplayAnima(parts = parts)
+                DisplayAnima( name,body,eye,mouth,accessory)
 
                 //コネクトモードのボタン
                 Column(horizontalAlignment = Alignment.CenterHorizontally,

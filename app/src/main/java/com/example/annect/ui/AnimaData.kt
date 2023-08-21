@@ -11,12 +11,11 @@ import com.example.annect.R
 data class AnimaData(
 
     //体のパーツ
-    var  animaParts: MutableMap<String,Int> = mutableMapOf(
-        "body" to R.drawable.body1,
-        "eye" to R.drawable.eye1,
-        "mouth" to R.drawable.mouth1,
-        "accessory" to R.drawable.accessory1
-    ),
+
+    @DrawableRes var body:Int = R.drawable.body1,
+    @DrawableRes var eye:Int = R.drawable.eye1,
+    @DrawableRes var mouth:Int = R.drawable.mouth1,
+    @DrawableRes var accessory:Int = R.drawable.accessory1,
 
     //親愛度
     var love:Int=1,
@@ -28,11 +27,34 @@ data class AnimaData(
 
 //partsを渡してAnimaを表示する関数
 @Composable
-fun DisplayAnima(parts:MutableMap<String, Int>){
+fun DisplayAnima( name:String,body:Int,eye:Int,mouth:Int,accessory:Int){
     Box(){
-        Image(painter = painterResource(id = parts["body"] ?: 0), contentDescription = null)
-        Image(painter = painterResource(id = parts["eye"] ?: 0), contentDescription = null)
-        Image(painter = painterResource(id = parts["mouth"] ?: 0), contentDescription = null)
-        Image(painter = painterResource(id = parts["accessory"] ?: 0), contentDescription = null)
+        Image(painter = painterResource(id = body), contentDescription = null)
+        Image(painter = painterResource(id = eye), contentDescription = null)
+        Image(painter = painterResource(id = mouth), contentDescription = null)
+        Image(painter = painterResource(id = accessory), contentDescription = null)
     }
 }
+
+val bodyData = listOf(
+    R.drawable.body1,
+    R.drawable.body2,
+    R.drawable.body3
+)
+val eyeData =listOf(
+    R.drawable.eye1,
+    R.drawable.eye2,
+    R.drawable.eye3
+)
+
+val mouthData =listOf(
+    R.drawable.mouth1,
+    R.drawable.mouth2,
+    R.drawable.mouth3
+)
+
+val accessoryData =listOf(
+    R.drawable.accessory1,
+    R.drawable.accessory2,
+    R.drawable.accessory3
+)
