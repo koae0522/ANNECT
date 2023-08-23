@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.example.annect.data.DisplayAnima
 
 
 @Composable
@@ -64,7 +65,7 @@ fun HomeScreen(
                 }
 
                 //Anima表示
-                DisplayAnima( name,body,eye,mouth,accessory)
+                DisplayAnima( body,eye,mouth,accessory, modifier = Modifier)
 
                 //コネクトモードのボタン
                 Column(horizontalAlignment = Alignment.CenterHorizontally,

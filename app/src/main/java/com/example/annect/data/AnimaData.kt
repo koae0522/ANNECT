@@ -1,9 +1,10 @@
-package com.example.annect.ui
+package com.example.annect.data
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.example.annect.R
 
@@ -27,8 +28,8 @@ data class AnimaData(
 
 //partsを渡してAnimaを表示する関数
 @Composable
-fun DisplayAnima( name:String,body:Int,eye:Int,mouth:Int,accessory:Int){
-    Box(){
+fun DisplayAnima( body:Int,eye:Int,mouth:Int,accessory:Int,modifier: Modifier){
+    Box(modifier){
         Image(painter = painterResource(id = body), contentDescription = null)
         Image(painter = painterResource(id = eye), contentDescription = null)
         Image(painter = painterResource(id = mouth), contentDescription = null)

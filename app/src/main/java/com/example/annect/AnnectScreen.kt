@@ -7,9 +7,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.annect.ui.AnimaViewModel
+import com.example.annect.data.AnimaViewModel
 import com.example.annect.ui.ConnectScreen
 import com.example.annect.ui.CreateScreen
+import com.example.annect.ui.EnterNameScreen
 import com.example.annect.ui.HomeScreen
 import com.example.annect.ui.MiniGameScreen
 
@@ -18,13 +19,14 @@ import com.example.annect.ui.MiniGameScreen
 enum class AnnectScreen(){
     Home,
     Create,
+    EnterName,
     MiniGame,
     Connect
 }
 
 @Composable
 fun AnnectScreen(
-    animaViewModel:AnimaViewModel = viewModel()
+    animaViewModel: AnimaViewModel = viewModel()
 ){
 
     val animaUiState by animaViewModel.uiState.collectAsState()
@@ -53,17 +55,32 @@ fun AnnectScreen(
         //Create画面
         composable(route = AnnectScreen.Create.name){
             CreateScreen(
-                onNextButtonClicked = {navController.navigate("Home")},
-                //uiStateからAnimaのパーツを渡す
+                //次へを押したら名前入力へ
+                onNextButtonClicked = {navController.navigate("EnterName")},
+                //パーツ
                 body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
                 //矢印が押された時の関数を呼び出す
-                name = animaUiState.name,
                 onArrowButtonClicked = {animaViewModel.ChangeAnimaParts(it)})
+        }
+
+        //EnterName画面
+        composable(route = AnnectScreen.EnterName.name){
+            EnterNameScreen(
+                //uiStateからAnimaのパーツを渡す
+                body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
+                onNextButtonClicked = {
+                    //viewModel更新
+                    animaViewModel.ChangeAnimaName(it)
+                    navController.navigate("Home")
+                }
+            )
         }
 
         //MiniGame画面
         composable(route = AnnectScreen.MiniGame.name){
-            MiniGameScreen(onHomeButtonClicked = {navController.navigate("Home")})
+            MiniGameScreen(onHomeButtonClicked = {
+                navController.navigate("Home")
+            })
         }
 
         //Connect画面

@@ -1,6 +1,5 @@
-package com.example.annect.ui
+package com.example.annect.data
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -11,8 +10,8 @@ class AnimaViewModel : ViewModel() {
     val uiState:StateFlow<AnimaData> = _uiState.asStateFlow()
 
     fun ChangeAnimaParts(parts: Int){
-        Log.d("TAG","$parts")
 
+        //パーツ更新(ゴリ押し)
         bodyData.forEach{
             if(it==parts){
                 _uiState.value=_uiState.value.copy(body = parts)
@@ -34,8 +33,13 @@ class AnimaViewModel : ViewModel() {
             }
         }
 
-
     }
+
+    fun ChangeAnimaName(name:String){
+        //名前更新
+        _uiState.value=_uiState.value.copy(name=name)
+    }
+
 
 
 }
