@@ -14,24 +14,30 @@ import androidx.compose.ui.unit.dp
 import com.example.annect.R
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.graphicsLayer
+import com.example.annect.data.DisplayAnima
+import com.example.annect.data.accessoryData
+import com.example.annect.data.bodyData
+import com.example.annect.data.eyeData
+import com.example.annect.data.mouthData
 
 @Composable
 fun CreateScreen(
     onNextButtonClicked: ()->Unit = {}, onArrowButtonClicked: (Int) -> Unit = { },
-    name:String,body:Int,eye:Int,mouth:Int,accessory:Int
+    body:Int,eye:Int,mouth:Int,accessory:Int
 ){
     Column(modifier = Modifier
         .displayCutoutPadding()
-        .padding(top = 20.dp)){
+        .padding(start = 20.dp,top = 20.dp)){
 
         Card {
             Text("Animaの見た目を決めよう", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(10.dp) )
@@ -40,7 +46,7 @@ fun CreateScreen(
         Row(){
 
             //Anima描画
-            DisplayAnima( name,body,eye,mouth,accessory)
+            DisplayAnima( body,eye,mouth,accessory, modifier = Modifier.size(300.dp).padding(start = 50.dp,top = 20.dp))
 
             //パーツリスト
             Column(modifier = Modifier.padding(start = 50.dp)) {
@@ -48,19 +54,17 @@ fun CreateScreen(
                     PartsSelectRow(partsName = "からだ", partsList = bodyData, onArrowButtonClicked =onArrowButtonClicked)
                     PartsSelectRow(partsName = "め", partsList = eyeData, onArrowButtonClicked =onArrowButtonClicked)
                 }
-                Row(modifier = Modifier.padding(20.dp)){
+                Row(modifier = Modifier.padding(start =20.dp)){
                     PartsSelectRow(partsName = "くち", partsList = mouthData, onArrowButtonClicked =onArrowButtonClicked)
                     PartsSelectRow(partsName = "アクセサリー", partsList = accessoryData, onArrowButtonClicked =onArrowButtonClicked)
                 }
             }
-            Row(){
-                Button(onClick = { onNextButtonClicked() }){
-                    Text("ホームに戻る")
-                }
-            }
+
         }
 
-
+        Button(onClick = onNextButtonClicked,Modifier.padding( end = 30.dp).align(Alignment.End).offset(y=(-10).dp)){
+            Text("次へ")
+        }
 
     }
 }
@@ -101,7 +105,7 @@ fun PartsSelectRow(
             //パーツの画像をリストから表示
             Image(painter = painterResource(id =partsList[currentParts]),
                 contentDescription = null,
-                modifier = Modifier.size(100.dp), )
+                modifier = Modifier.size(90.dp), )
 
             Icon(painter = painterResource(id = R.drawable.right), contentDescription = null,
                 modifier = Modifier
