@@ -23,7 +23,7 @@ data class AnimaData(
     //気分(要るかわからんが)
     var feeling:Int=1,
     //名前
-    var name:String="misuzu"
+    var name:String=""
 )
 
 //partsを渡してAnimaを表示する関数
