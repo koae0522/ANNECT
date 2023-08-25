@@ -40,7 +40,15 @@ class AnimaViewModel : ViewModel() {
         _uiState.value=_uiState.value.copy(name=name)
     }
 
-
+    fun loadData(name:String,body:Int,eye:Int,mouth:Int,accessory:Int,love:Int,feeling:Int){
+        _uiState.value=_uiState.value.copy(name = name)
+        _uiState.value=_uiState.value.copy(body = body)
+        _uiState.value=_uiState.value.copy(eye = eye)
+        _uiState.value=_uiState.value.copy(mouth = mouth)
+        _uiState.value=_uiState.value.copy(accessory = accessory)
+        _uiState.value=_uiState.value.copy(love = love)
+        _uiState.value=_uiState.value.copy(feeling = feeling)
+    }
 
 }
 

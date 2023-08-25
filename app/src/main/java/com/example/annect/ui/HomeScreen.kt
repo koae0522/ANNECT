@@ -1,5 +1,7 @@
 package com.example.annect.ui
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
@@ -15,6 +17,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.graphicsLayer
@@ -25,7 +28,7 @@ import com.example.annect.data.DisplayAnima
 
 @Composable
 fun HomeScreen(
-    onMiniGameButtonClicked: ()->Unit = {}, onConnectButtonClicked: ()->Unit = {},
+    onMiniGameButtonClicked: ()->Unit = {}, onConnectButtonClicked: ()->Unit = {},onClearDataClicked: ()->Unit = {},
     name:String,body:Int,eye:Int,mouth:Int,accessory:Int
 ){
 
@@ -77,6 +80,11 @@ fun HomeScreen(
 
             }
         }
+
+        Button(onClick=onClearDataClicked, modifier = Modifier.align(Alignment.TopEnd)){
+            Text("データ消去")
+        }
+
     }
 
 
