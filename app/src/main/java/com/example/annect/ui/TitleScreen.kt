@@ -11,7 +11,7 @@ import androidx.compose.runtime.ComposeCompilerApi
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
-//タイトル画面(仮)
+//タイトル画面(仮
 @Composable
 fun TitleScreen(onScreenClicked: ()->Unit = {}){
     Box(modifier = Modifier.clickable { onScreenClicked() }){
