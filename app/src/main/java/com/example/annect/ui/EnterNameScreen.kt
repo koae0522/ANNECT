@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.annect.data.DisplayAnima
 
+//名前入力画面
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EnterNameScreen(body:Int,eye:Int,mouth:Int,accessory:Int,

@@ -12,7 +12,6 @@ import com.example.annect.R
 data class AnimaData(
 
     //体のパーツ
-
     @DrawableRes var body:Int = R.drawable.body1,
     @DrawableRes var eye:Int = R.drawable.eye1,
     @DrawableRes var mouth:Int = R.drawable.mouth1,
@@ -37,6 +36,7 @@ fun DisplayAnima( body:Int,eye:Int,mouth:Int,accessory:Int,modifier: Modifier){
     }
 }
 
+//パーツのデータリスト　キャラクリ時に使用
 val bodyData = listOf(
     R.drawable.body1,
     R.drawable.body2,
