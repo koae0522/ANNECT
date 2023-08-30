@@ -41,7 +41,6 @@ fun AnnectScreen(
     animaViewModel: AnimaViewModel = viewModel() ,context: Context
 ){
 
-
     val animaUiState by animaViewModel.uiState.collectAsState()
     val navController = rememberNavController()
 

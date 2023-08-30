@@ -40,6 +40,7 @@ class AnimaViewModel : ViewModel() {
         _uiState.value=_uiState.value.copy(name=name)
     }
 
+    //起動時にデータストアからviewModel更新
     fun loadData(name:String,body:Int,eye:Int,mouth:Int,accessory:Int,love:Int,feeling:Int){
         _uiState.value=_uiState.value.copy(name = name)
         _uiState.value=_uiState.value.copy(body = body)

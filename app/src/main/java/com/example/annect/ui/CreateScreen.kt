@@ -30,6 +30,7 @@ import com.example.annect.data.bodyData
 import com.example.annect.data.eyeData
 import com.example.annect.data.mouthData
 
+//キャラクタを作る画面
 @Composable
 fun CreateScreen(
     onNextButtonClicked: ()->Unit = {}, onArrowButtonClicked: (Int) -> Unit = { },

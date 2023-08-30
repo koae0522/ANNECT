@@ -16,6 +16,7 @@ import java.io.IOException
 
 val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "animaData")
 
+//データストアの処理
 class DataRepository (private val context: Context){
     //名前
     var NAME = stringPreferencesKey("name")
