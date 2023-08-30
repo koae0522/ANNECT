@@ -12,7 +12,7 @@ AnnectScreen.ktでviewModelを呼び出し、NavHostで画面遷移をしてい�
 
 データを消したいときは、ホーム画面のデータ消去ボタンを押してアプリを再起動してください。
 
-### Arduinoとの通信について
+## Arduinoとの通信について
 ConnectScreen.ktでArduinoとの通信を行いたいです。この部分は今野が担当します。
 実装したい事
 Androidアプリケーションにおいて
