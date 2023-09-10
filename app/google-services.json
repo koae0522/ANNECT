@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "92313411428",
+    "project_id": "annect-55ef4",
+    "storage_bucket": "annect-55ef4.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:92313411428:android:395ed82a85ff730f9f2471",
+        "android_client_info": {
+          "package_name": "com.example.annect"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "92313411428-cts1ebirak9vi1bu5ktge65rmj14an4g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD5srzXEdXbZYdxrahH-E1AhvTMHeQWPO8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "92313411428-cts1ebirak9vi1bu5ktge65rmj14an4g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

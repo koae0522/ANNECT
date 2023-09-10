@@ -1,5 +1,7 @@
 package com.example.annect.data
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -28,12 +30,18 @@ data class AnimaData(
 //partsを渡してAnimaを表示する関数
 @Composable
 fun DisplayAnima( body:Int,eye:Int,mouth:Int,accessory:Int,modifier: Modifier){
+    Log.d(TAG, body.toString())
+    Log.d(TAG, eye.toString())
+    Log.d(TAG, mouth.toString())
+    Log.d(TAG, accessory.toString())
+
     Box(modifier){
         Image(painter = painterResource(id = body), contentDescription = null)
         Image(painter = painterResource(id = eye), contentDescription = null)
         Image(painter = painterResource(id = mouth), contentDescription = null)
         Image(painter = painterResource(id = accessory), contentDescription = null)
     }
+
 }
 
 //パーツのデータリスト　キャラクリ時に使用
