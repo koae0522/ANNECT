@@ -15,6 +15,7 @@ import androidx.core.view.WindowCompat
 import com.example.annect.ui.theme.ANNECTTheme
 
 
+
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

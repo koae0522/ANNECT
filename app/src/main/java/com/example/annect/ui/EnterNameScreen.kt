@@ -48,9 +48,9 @@ Box(){
         Text("Animaの名前を決めよう", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(10.dp) )
     }
     Row(){
-        DisplayAnima( body,eye,mouth,accessory, modifier = Modifier
-            .size(300.dp)
-            .padding(20.dp))
+//        DisplayAnima( body,eye,mouth,accessory, modifier = Modifier
+//            .size(300.dp)
+//            .padding(20.dp))
         Column() {
 
             OutlinedTextField(
@@ -62,7 +62,8 @@ Box(){
                 singleLine = true,
 
                 )
-            Button(onClick = {//名前が入力されていないときは押せない
+            Button(onClick = {
+                //名前が入力されていないときは押せない
                 if (text.isNotEmpty()) {
                     onDecideButtonClicked (text)
                     decideButtonFlag = true
