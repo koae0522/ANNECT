@@ -53,17 +53,40 @@ val bodyData = listOf(
 val eyeData =listOf(
     R.drawable.eye1,
     R.drawable.eye2,
-    R.drawable.eye3
+    R.drawable.eye3,
+    R.drawable.eye4,
+    R.drawable.eye5,
+    R.drawable.eye6,
+    R.drawable.eye7,
+    R.drawable.eye8,
+    R.drawable.eye9,
+    R.drawable.eye10,
+    R.drawable.eye11,
 )
 
 val mouthData =listOf(
     R.drawable.mouth1,
     R.drawable.mouth2,
-    R.drawable.mouth3
+    R.drawable.mouth3,
+    R.drawable.mouth4,
+    R.drawable.mouth6,
+    R.drawable.mouth7,
+    R.drawable.mouth8,
+    R.drawable.mouth9,
+    R.drawable.mouth10,
+    R.drawable.mouth11,
+    R.drawable.mouth12,
 )
 
 val accessoryData =listOf(
     R.drawable.accessory1,
     R.drawable.accessory2,
-    R.drawable.accessory3
+    R.drawable.accessory3,
+    R.drawable.accessory4,
+    R.drawable.accessory5,
+    R.drawable.accessory6,
+    R.drawable.accessory7,
+    R.drawable.accessory8,
+    R.drawable.accessory9,
+    R.drawable.accessory10,
 )

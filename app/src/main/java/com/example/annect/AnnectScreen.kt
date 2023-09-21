@@ -17,7 +17,6 @@ import androidx.navigation.compose.rememberNavController
 import com.example.annect.data.AnimaViewModel
 import com.example.annect.data.DataRepository
 import com.example.annect.ui.AnimaChannelScreen
-import com.example.annect.ui.ConnectCheckScreen
 import com.example.annect.ui.ConnectScreen
 import com.example.annect.ui.CreateScreen
 import com.example.annect.ui.EnterNameScreen
@@ -36,8 +35,7 @@ enum class AnnectScreen(){
     MiniGame,
     Connect,
     Title,
-    AnimaChannel,
-    ConnectCheck
+    AnimaChannel
 }
 
 @Composable
@@ -123,7 +121,7 @@ fun AnnectScreen(
 
             HomeScreen(
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+                onConnectButtonClicked ={navController.navigate("Connect")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
                 onClearDataClicked={
                     //データ消去
@@ -190,15 +188,8 @@ fun AnnectScreen(
 
         //Connect画面
         composable(route = AnnectScreen.Connect.name){
-            ConnectScreen(onHomeButtonClicked = {navController.navigate("Home")})
+           ConnectScreen(onHomeButtonClicked = {navController.navigate("Home")})
         }
-
-        //ConnectCheck
-        composable(route = AnnectScreen.ConnectCheck.name){
-            ConnectCheckScreen(onHomeButtonClicked = {navController.navigate("Home")},onNextButtonClicked = {navController.navigate("Connect")},context = context)
-        }
-
-
         //AnimaChannel画面
         composable(route = AnnectScreen.AnimaChannel.name){
             AnimaChannelScreen(
