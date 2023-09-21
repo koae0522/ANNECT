@@ -15,8 +15,10 @@ import androidx.compose.runtime.setValue
 @Composable
 fun ConnectCheckScreen(onHomeButtonClicked: ()->Unit = {}, onNextButtonClicked: () -> Unit = {},context : Context){
 
+    //判定
     var connectCheck : Int by remember { mutableIntStateOf(0) }
 
+    //繋げるかどうかチェック
     val connect = USBSerial(context)
 
     Column(){

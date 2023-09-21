@@ -63,21 +63,12 @@ fun HomeScreen(
                 Column(horizontalAlignment = Alignment.CenterHorizontally,
                     //押したらミニゲームに遷移
                     modifier = Modifier.clickable { onMiniGameButtonClicked()}){
-                    Image(painterResource(id = R.drawable.toybox), contentDescription = null, modifier = Modifier.size(200.dp))
+                    Image(painterResource(id = R.drawable.toybox1), contentDescription = null, modifier = Modifier.size(200.dp))
                     Text("ミニゲーム",style = MaterialTheme.typography.bodyLarge)
                 }
 
                 //Anima表示
              DisplayAnima( body,eye,mouth,accessory, modifier = Modifier.size(200.dp))
-
-                //コネクトモードのボタン
-                Column(horizontalAlignment = Alignment.CenterHorizontally,
-                    //押したらコネクトモードに
-                    modifier = Modifier.clickable { onConnectButtonClicked() }){
-                    Image(painterResource(id = R.drawable.tansu), contentDescription = null, modifier = Modifier.size(200.dp))
-                    Text("コネクトモード", style = MaterialTheme.typography.bodyLarge)
-                }
-
                 //アニマちゃんねる
                 Column(horizontalAlignment = Alignment.CenterHorizontally,
                     //押したらアニマちゃんねるに
@@ -85,6 +76,15 @@ fun HomeScreen(
                     Image(painterResource(id = R.drawable.pc), contentDescription = null, modifier = Modifier.size(200.dp))
                     Text("あにまちゃんねる", style = MaterialTheme.typography.bodyLarge)
                 }
+                //コネクトモードのボタン
+                Column(horizontalAlignment = Alignment.CenterHorizontally,
+                    //押したらコネクトモードに
+                    modifier = Modifier.clickable { onConnectButtonClicked() }){
+                    Image(painterResource(id = R.drawable.tansu1), contentDescription = null, modifier = Modifier.size(200.dp))
+                    Text("コネクトモード", style = MaterialTheme.typography.bodyLarge)
+                }
+
+
             }
         }
 
