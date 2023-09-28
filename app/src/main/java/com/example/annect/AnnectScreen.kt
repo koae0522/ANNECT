@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.annect.data.AnimaViewModel
 import com.example.annect.data.DataRepository
 import com.example.annect.ui.AnimaChannelScreen
+import com.example.annect.ui.ConnectFaceScreen
 import com.example.annect.ui.ConnectScreen
 import com.example.annect.ui.CreateScreen
 import com.example.annect.ui.EnterNameScreen
@@ -35,7 +36,8 @@ enum class AnnectScreen(){
     MiniGame,
     Connect,
     Title,
-    AnimaChannel
+    AnimaChannel,
+    ConnectFace,
 }
 
 @Composable
@@ -188,7 +190,16 @@ fun AnnectScreen(
 
         //Connect画面
         composable(route = AnnectScreen.Connect.name){
-           ConnectScreen(onHomeButtonClicked = {navController.navigate("Home")})
+           ConnectScreen(onHomeButtonClicked = {navController.navigate("Home")},
+               onCatButtonClicked = {
+                   animaViewModel.ChangeAnimalName("ねこ")
+                   navController.navigate("ConnectFace")
+                 },
+               onUnicornButtonClicked = {
+                   animaViewModel.ChangeAnimalName("ユニコーン")
+                   navController.navigate("ConnectFace")
+                }
+           )
         }
         //AnimaChannel画面
         composable(route = AnnectScreen.AnimaChannel.name){
@@ -196,6 +207,12 @@ fun AnnectScreen(
                 name = animaUiState.name,body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
                 onHomeButtonClicked = {navController.navigate("Home") }
             )
+        }
+
+        //あそぶ画面
+        composable(route=AnnectScreen.ConnectFace.name){
+            ConnectFaceScreen(body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
+                animal=animaUiState.animal)
         }
 
     }

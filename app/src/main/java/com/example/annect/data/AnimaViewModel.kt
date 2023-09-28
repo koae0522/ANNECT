@@ -9,6 +9,9 @@ class AnimaViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(AnimaData())
     val uiState:StateFlow<AnimaData> = _uiState.asStateFlow()
 
+    fun ChangeAnimalName(animalName:String){
+        _uiState.value=_uiState.value.copy(animal = animalName)
+    }
     fun ChangeAnimaParts(parts: Int){
 
         //パーツ更新(ゴリ押し)
