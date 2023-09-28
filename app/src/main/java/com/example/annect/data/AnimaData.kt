@@ -24,7 +24,11 @@ data class AnimaData(
     //気分(要るかわからんが)
     var feeling:Int=1,
     //名前
-    var name:String=""
+    var name:String="",
+    //選んでる生き物
+    var animal:String="",
+    //まばたき
+    var blink:Boolean=false
 )
 
 //partsを渡してAnimaを表示する関数
