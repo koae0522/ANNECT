@@ -16,13 +16,17 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Button
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.annect.data.DisplayAnima
 
@@ -42,50 +46,41 @@ fun HomeScreen(
             contentDescription = null,
 
             //透明度50%
-            modifier = Modifier.fillMaxSize().
-            graphicsLayer { this.alpha = 0.5f },
+            modifier = Modifier
+                .fillMaxSize()
+                .graphicsLayer { this.alpha = 0.5f },
             //画面いっぱいに表示
             contentScale = ContentScale.FillBounds)
 
         Column(
             modifier = Modifier
-            .displayCutoutPadding()
-            .fillMaxSize().padding(10.dp),
+                .displayCutoutPadding()
+                .fillMaxSize()
+                .padding(10.dp),
 
         ){
             //名前表示
-            Card(modifier = Modifier){
+            Card(modifier = Modifier,elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
+            ), ){
                 Text(name,modifier = Modifier.padding(15.dp), style = MaterialTheme.typography.titleLarge)
             }
 
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding(top=50.dp)){
-                //ミニゲームのボタン
-                Column(horizontalAlignment = Alignment.CenterHorizontally,
-                    //押したらミニゲームに遷移
-                    modifier = Modifier.clickable { onMiniGameButtonClicked()}){
-                    Image(painterResource(id = R.drawable.toybox1), contentDescription = null, modifier = Modifier.size(200.dp))
-                    Text("ミニゲーム",style = MaterialTheme.typography.bodyLarge)
-                }
-
+            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding()){
                 //Anima表示
-             DisplayAnima( body,eye,mouth,accessory, modifier = Modifier.size(200.dp))
+                DisplayAnima( body,eye,mouth,accessory, modifier = Modifier.size(250.dp))
+
+                //ミニゲームのボタン
+                Menu(clickAction =  onMiniGameButtonClicked,name="ミニゲーム",image=R.drawable.toybox1)
+
                 //アニマちゃんねる
-                Column(horizontalAlignment = Alignment.CenterHorizontally,
-                    //押したらアニマちゃんねるに
-                    modifier = Modifier.clickable { onAnimaChannelButtonClicked() }){
-                    Image(painterResource(id = R.drawable.pc), contentDescription = null, modifier = Modifier.size(200.dp))
-                    Text("あにまちゃんねる", style = MaterialTheme.typography.bodyLarge)
-                }
+                Menu(clickAction =  onAnimaChannelButtonClicked,name="あにま\nちゃんねる",image=R.drawable.pc)
+
                 //コネクトモードのボタン
-                Column(horizontalAlignment = Alignment.CenterHorizontally,
-                    //押したらコネクトモードに
-                    modifier = Modifier.clickable { onConnectButtonClicked() }){
-                    Image(painterResource(id = R.drawable.tansu1), contentDescription = null, modifier = Modifier.size(200.dp))
-                    Text("コネクトモード", style = MaterialTheme.typography.bodyLarge)
+                Menu(clickAction =  onConnectButtonClicked,name="コネクト\nモード",image=R.drawable.tansu1)
+
                 }
 
-
-            }
         }
 
         Button(onClick=onClearDataClicked, modifier = Modifier.align(Alignment.TopEnd)){
@@ -94,6 +89,28 @@ fun HomeScreen(
 
     }
 
+}
+
+@Composable
+fun Menu(clickAction: ()->Unit = {},name: String,image:Int){
+        Column(horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            //押したらコネクトモードに
+            modifier = Modifier.clickable { clickAction() }){
+            Card(shape=MaterialTheme.shapes.large,
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 10.dp
+                ),
+                modifier = Modifier.padding(top=20.dp,start=10.dp,end=10.dp).width(180.dp).height(250.dp)) {
+                Image(
+                    painterResource(id = image),
+                    contentDescription = null,
+                    modifier = Modifier.size(160.dp)
+                )
+                Text(name, style = MaterialTheme.typography.titleLarge,textAlign = TextAlign.Center)
+            }
+
+        }
 
 
 }
