@@ -17,6 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.annect.data.AnimaViewModel
 import com.example.annect.data.DataRepository
 import com.example.annect.ui.AnimaChannelScreen
+import com.example.annect.ui.ConnectCheckScreen
 import com.example.annect.ui.ConnectFaceScreen
 import com.example.annect.ui.ConnectScreen
 import com.example.annect.ui.CreateScreen
@@ -24,6 +25,7 @@ import com.example.annect.ui.EnterNameScreen
 import com.example.annect.ui.HomeScreen
 import com.example.annect.ui.MiniGameScreen
 import com.example.annect.ui.TitleScreen
+import com.example.annect.ui.USBSerial
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 
@@ -37,6 +39,7 @@ enum class AnnectScreen(){
     Connect,
     Title,
     AnimaChannel,
+    ConnectCheck,
     ConnectFace,
 }
 
@@ -123,7 +126,7 @@ fun AnnectScreen(
 
             HomeScreen(
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                onConnectButtonClicked ={navController.navigate("Connect")},
+                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
                 onClearDataClicked={
                     //データ消去
@@ -199,8 +202,17 @@ fun AnnectScreen(
                    animaViewModel.ChangeAnimalName("ユニコーン")
                    navController.navigate("ConnectFace")
                 }
+
            )
         }
+
+        //ConnectCheck画面
+        composable(route = AnnectScreen.ConnectCheck.name) {
+            ConnectCheckScreen(onHomeButtonClicked = {navController.navigate("Home")},
+                onNextButtonClicked = { navController.navigate("Connect") },
+                context = context)
+        }
+
         //AnimaChannel画面
         composable(route = AnnectScreen.AnimaChannel.name){
             AnimaChannelScreen(
@@ -212,7 +224,7 @@ fun AnnectScreen(
         //あそぶ画面
         composable(route=AnnectScreen.ConnectFace.name){
             ConnectFaceScreen(body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
-                animal=animaUiState.animal)
+                animal=animaUiState.animal,context = context)
         }
 
     }

@@ -1,6 +1,7 @@
 package com.example.annect.ui
 
 import android.content.ContentValues
+import android.content.Context
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -33,16 +34,33 @@ import androidx.compose.ui.unit.dp
 import com.example.annect.R
 import java.util.Timer
 import kotlin.concurrent.schedule
-
 @Composable
-fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String, ){
+fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,context:Context){
+
 
     var backgroundColor=Color(0xFFDAD6CD)
+    var test = "not_recv"
+    val connect =  remember { USBSerial(context)}
+
+    var animal_data = ""
+    var check by remember {
+        mutableIntStateOf(0)
+    }
     //えらんだ動物で背景色を変える
     when(animal){
         "ねこ"-> backgroundColor=Color(0xFFDAD6CD)
         "ユニコーン"->backgroundColor= Color(0xFFD2A3CB)
     }
+
+    if(check == 0){
+        when(animal){
+            "ねこ"-> animal_data = "a"
+            "ユニコーン"->animal_data = "b"
+        }
+        connect.write(context,animal_data,8)
+        check = 1
+    }
+
 
     var eyeResource by remember { mutableIntStateOf(eye) }
     var mouthResource by remember { mutableIntStateOf(mouth) }
@@ -79,44 +97,64 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String, )
         Image(painter = painterResource(id = eyeResource),
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
-            modifier=Modifier.fillMaxSize().graphicsLayer {
-                scaleX= 2F
-                scaleY=2F
-            }.padding(top=150.dp)
+            modifier= Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    scaleX = 2F
+                    scaleY = 2F
+                }
+                .padding(top = 150.dp)
         )
         Image(painter = painterResource(id = mouthResource),
             contentDescription = null,
             contentScale = ContentScale.FillWidth,
-            modifier=Modifier.fillMaxSize().graphicsLayer {
-                scaleX= 2F
-                scaleY=2F
-            }.padding(top=150.dp)
+            modifier= Modifier
+                .fillMaxSize()
+                .graphicsLayer {
+                    scaleX = 2F
+                    scaleY = 2F
+                }
+                .padding(top = 150.dp)
         )
 
         Box(modifier = Modifier.fillMaxSize()){
             Column {
-                Box(modifier = Modifier.fillMaxWidth().weight(1f).pointerInput(Unit) {
-                    detectTapGestures(
-                        //上側を触った時の処理
-                        onPress = {
-                            // 押してる
-                            mouthResource= R.drawable.mouth1
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            //上側を触った時の処理
+                            onPress = {
+                                // 押してる
+                                mouthResource = R.drawable.mouth1
+                                test = connect.write(context, "t", 8)
+                                test += "t"
 
-                            tryAwaitRelease()
+                                tryAwaitRelease()
 
-                            // 離した
-                            mouthResource=mouth
-                        },
-                    )
-                }) {}
-                Box(modifier = Modifier.fillMaxWidth().weight(1f).pointerInput(Unit){
-                    detectTapGestures (
-                        //下側を触った時の処理
-                        onTap = {
+                                // 離した
+                                mouthResource = mouth
+//                                test = connect.write(context, "t", 8)
+//                                test += "t"
+                            },
 
-                        }
-                    )
-                }){}
+                            )
+                    }) { Text(text = test)}
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+                    .pointerInput(Unit) {
+                        detectTapGestures(
+                            //下側を触った時の処理
+                            onTap = {
+                                test = connect.write(context, "s", 8)
+                                test += "s"
+                            }
+                        )
+                    }
+
+                ){}
             }
         }
     }
