@@ -28,7 +28,6 @@ import com.example.annect.R
 
 //この画面でArduinoとの通信をしたい
 @Composable
-@Preview
 fun ConnectScreen(onHomeButtonClicked: ()->Unit = {},
                   onCatButtonClicked: ()->Unit = {},onUnicornButtonClicked: ()->Unit = {}){
     Box(modifier = Modifier.fillMaxSize()){
