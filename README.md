@@ -1,1 +1,1 @@
-これはReadme
+arduinoのファイルはarduinoフォルダに入ってます
