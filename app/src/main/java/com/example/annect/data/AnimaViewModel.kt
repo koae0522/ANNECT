@@ -54,5 +54,12 @@ class AnimaViewModel : ViewModel() {
         _uiState.value=_uiState.value.copy(feeling = feeling)
     }
 
+    fun increaseLove() {
+        val currentLove = _uiState.value.love
+        val updatedLove = currentLove + 1
+        _uiState.value = _uiState.value.copy(love = updatedLove)
+    }
+
+
 }
 

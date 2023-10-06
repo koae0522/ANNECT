@@ -49,7 +49,7 @@ fun HomeScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .graphicsLayer { this.alpha = 0.5f },
-            //画面いっぱいに表示
+            //画面いっぱいに表示する
             contentScale = ContentScale.FillBounds)
 
         Column(

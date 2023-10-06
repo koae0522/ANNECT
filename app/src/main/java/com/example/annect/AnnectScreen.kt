@@ -24,8 +24,10 @@ import com.example.annect.ui.CreateScreen
 import com.example.annect.ui.EnterNameScreen
 import com.example.annect.ui.HomeScreen
 import com.example.annect.ui.MiniGameScreen
+import com.example.annect.ui.QuizGameScreen
 import com.example.annect.ui.TitleScreen
 import com.example.annect.ui.USBSerial
+import com.example.annect.ui.quizList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 
@@ -41,6 +43,7 @@ enum class AnnectScreen(){
     AnimaChannel,
     ConnectCheck,
     ConnectFace,
+    QuizGame
 }
 
 @Composable
@@ -188,6 +191,8 @@ fun AnnectScreen(
         composable(route = AnnectScreen.MiniGame.name){
             MiniGameScreen(onHomeButtonClicked = {
                 navController.navigate("Home")
+            }, onQuizGameSelected = {
+                navController.navigate("QuizGame")  // クイズゲームへの遷移
             })
         }
 
@@ -204,6 +209,21 @@ fun AnnectScreen(
                 }
 
            )
+        }
+
+        //QuizGame画面
+        composable(route = AnnectScreen.QuizGame.name) {
+            QuizGameScreen(
+                animaViewModel = animaViewModel,
+                quizList = quizList,
+                onBackButtonClicked = { navController.popBackStack() }
+
+
+            )
+
+            runBlocking(Dispatchers.IO) {
+                dataRepository.saveLove(animaViewModel.uiState.value.love)
+            }
         }
 
         //ConnectCheck画面
