@@ -1,6 +1,7 @@
 package com.example.annect.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,11 +15,14 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -30,15 +34,41 @@ import com.example.annect.R
 @Composable
 fun ConnectScreen(onHomeButtonClicked: ()->Unit = {},
                   onCatButtonClicked: ()->Unit = {},onUnicornButtonClicked: ()->Unit = {}){
-    Box(modifier = Modifier.fillMaxSize()){
-        Column(modifier = Modifier.displayCutoutPadding().fillMaxSize().padding(20.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,){
-            Text("変身したい生き物を選ぼう！", style = MaterialTheme.typography.titleLarge)
-            Row {
-                AnimalSelectCard("ねこ", R.drawable.cat,onCatButtonClicked)
-                AnimalSelectCard(animalName = "ユニコおん", img = R.drawable.unicoooooooooooooooon,onUnicornButtonClicked)
+    Box(modifier = Modifier
+        .fillMaxSize()
+        .background(
+            Brush.linearGradient(
+                colors = listOf(
+                    MaterialTheme.colorScheme.primaryContainer,
+                    MaterialTheme.colorScheme.secondaryContainer,
+                    Color.White
+                )
+            )
+        )){
+        Column(modifier = Modifier
+            .displayCutoutPadding()
+            .fillMaxWidth()
+            .padding(start = 20.dp, top = 20.dp, end = 20.dp)){
+
+            Card (modifier = Modifier,
+                elevation = CardDefaults.cardElevation(
+                    defaultElevation = 10.dp
+                ),
+
+                ){
+                Text("変身したい生き物を選ぼう", style = MaterialTheme.typography.titleLarge,
+                    modifier = Modifier.padding(10.dp)
+                )
             }
+
+            Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Center,) {
+                Image(painter = painterResource(id = R.drawable.neko3), contentDescription = null,
+                    modifier = Modifier.clickable { onCatButtonClicked() })
+                Image(painter = painterResource(id = R.drawable.unicorn3),
+                    contentDescription = null,
+                    modifier = Modifier.clickable { onUnicornButtonClicked() })
+            }
+
             Button(onClick = {onHomeButtonClicked()},
                 Modifier
                     .padding(end = 0.dp)
@@ -52,13 +82,13 @@ fun ConnectScreen(onHomeButtonClicked: ()->Unit = {},
 
 }
 
-@Composable
-fun AnimalSelectCard(animalName:String,img:Int,buttonAction:()->Unit = {}){
-
-        Column(modifier = Modifier.clickable { buttonAction() }){
-            Text(animalName,textAlign = TextAlign.Center)
-            Image(painter = painterResource(id = img), contentDescription = null,
-                modifier = Modifier.size(200.dp))
-        }
-
-}
+//@Composable
+//fun AnimalSelectCard(animalName:String,img:Int,buttonAction:()->Unit = {}){
+//
+//        Column(modifier = Modifier.clickable { buttonAction() }){
+//            Text(animalName,textAlign = TextAlign.Center)
+//            Image(painter = painterResource(id = img), contentDescription = null,
+//                modifier = Modifier.size(200.dp))
+//        }
+//
+//}

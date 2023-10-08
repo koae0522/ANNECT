@@ -64,18 +64,39 @@ fun HomeScreen(
                 Text(name,modifier = Modifier.padding(15.dp), style = MaterialTheme.typography.titleLarge)
             }
 
-            Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.padding()){
+            Row( verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding()){
                 //Anima表示
-                DisplayAnima( body,eye,mouth,accessory, modifier = Modifier.size(250.dp))
+                DisplayAnima( body,eye,mouth,accessory, modifier = Modifier.weight(1.5f))
 
                 //ミニゲームのボタン
-                Menu(clickAction =  onMiniGameButtonClicked,name="ミニゲーム",image=R.drawable.toybox1)
+                Image(painter= painterResource(id = R.drawable.minigame),
+                    contentDescription = null,
+                    modifier = Modifier.weight(1f).
+                    clickable { onMiniGameButtonClicked() }
+                )
 
-                //アニマちゃんねる
-                Menu(clickAction =  onAnimaChannelButtonClicked,name="あにま\nちゃんねる",image=R.drawable.pc)
+                //アニマチャンネルのぼたん
+                Image(painter= painterResource(id = R.drawable.animachanel),
+                    contentDescription = null,
+                    modifier = Modifier.weight(1f).
+                    clickable { onAnimaChannelButtonClicked() }
+                    )
 
                 //コネクトモードのボタン
-                Menu(clickAction =  onConnectButtonClicked,name="コネクト\nモード",image=R.drawable.tansu1)
+                Image(painter= painterResource(id = R.drawable.connectmode),
+                    contentDescription = null,
+                    modifier = Modifier.weight(1f).
+                    clickable { onConnectButtonClicked() }
+                    )
+
+//                //ミニゲームのボタン
+//                Menu(clickAction =  onMiniGameButtonClicked,name="ミニゲーム",image=R.drawable.toybox1)
+//
+//                //アニマちゃんねる
+//                Menu(clickAction =  onAnimaChannelButtonClicked,name="あにま\nちゃんねる",image=R.drawable.pc)
+//
+//                //コネクトモードのボタン
+//                Menu(clickAction =  onConnectButtonClicked,name="コネクト\nモード",image=R.drawable.tansu1)
 
                 }
 
@@ -89,27 +110,27 @@ fun HomeScreen(
 
 }
 
-
-@Composable
-fun Menu(clickAction: ()->Unit = {},name: String,image:Int){
-    Column(horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-        //押したらコネクトモードに
-        modifier = Modifier.clickable { clickAction() }){
-        Card(shape=MaterialTheme.shapes.large,
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 10.dp
-            ),
-            modifier = Modifier.padding(top=20.dp,start=10.dp,end=10.dp).width(180.dp).height(250.dp)) {
-            Image(
-                painterResource(id = image),
-                contentDescription = null,
-                modifier = Modifier.size(160.dp)
-            )
-            Text(name, style = MaterialTheme.typography.titleLarge,textAlign = TextAlign.Center)
-        }
-
-    }
-
-
-}
+//
+//@Composable
+//fun Menu(clickAction: ()->Unit = {},name: String,image:Int){
+//    Column(horizontalAlignment = Alignment.CenterHorizontally,
+//        verticalArrangement = Arrangement.Center,
+//        //押したらコネクトモードに
+//        modifier = Modifier.clickable { clickAction() }){
+//        Card(shape=MaterialTheme.shapes.large,
+//            elevation = CardDefaults.cardElevation(
+//                defaultElevation = 10.dp
+//            ),
+//            modifier = Modifier.padding(top=20.dp,start=10.dp,end=10.dp).width(180.dp).height(250.dp)) {
+//            Image(
+//                painterResource(id = image),
+//                contentDescription = null,
+//                modifier = Modifier.size(160.dp)
+//            )
+//            Text(name, style = MaterialTheme.typography.titleLarge,textAlign = TextAlign.Center)
+//        }
+//
+//    }
+//
+//
+//}
