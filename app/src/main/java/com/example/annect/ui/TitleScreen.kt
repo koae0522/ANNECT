@@ -8,11 +8,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.example.annect.R
 
 @Composable
-fun TitleScreen(onScreenClicked: () -> Unit = {}) {
+fun TitleScreen(onScreenClicked: () -> Unit = {},onDataDeleteClicked: () -> Unit = {}) {
     val logoId = R.drawable.logo
     val backgroundId = R.drawable.title3
     val touchId = R.drawable.tap_to_care
@@ -20,7 +21,7 @@ fun TitleScreen(onScreenClicked: () -> Unit = {}) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .clickable { onScreenClicked() }
+
     ) {
         // 背景画像を表示
         Image(
@@ -36,7 +37,8 @@ fun TitleScreen(onScreenClicked: () -> Unit = {}) {
             modifier = Modifier
                 .size(1000.dp) // ロゴのサイズを調整
                 .align(Alignment.TopCenter)
-                .offset(y = (-60).dp) // 上から50dpの位置にオフセット
+                .offset(y = (-60).dp)
+                .clickable { onScreenClicked() }// 上から50dpの位置にオフセット
         )
 
         // "Tap to care"を表示
@@ -47,6 +49,10 @@ fun TitleScreen(onScreenClicked: () -> Unit = {}) {
                 .size(1000.dp) // "Tap to care"のサイズを調整
                 .align(Alignment.BottomCenter)
                 .offset(y = 155.dp) // 下から50dpの位置にオフセット
+
         )
+
+        Text("データ削除", textAlign = TextAlign.End
+        , modifier = Modifier.clickable { onDataDeleteClicked() })
     }
 }

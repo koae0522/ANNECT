@@ -121,7 +121,18 @@ fun AnnectScreen(
         composable(route=AnnectScreen.Title.name){
             TitleScreen(onScreenClicked = {
                 navController.navigate(startScreen)
-            })
+            },
+                onDataDeleteClicked = {
+                    runBlocking(Dispatchers.IO) {
+                        dataRepository.clearName()
+                        dataRepository.clearEye()
+                        dataRepository.clearMouth()
+                        dataRepository.clearAccessory()
+                        dataRepository.clearLove()
+                        dataRepository.clearFeeling()
+                        dataRepository.clearCreatedFlag()
+                    }
+                })
         }
 
         //Home画面

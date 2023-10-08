@@ -1,7 +1,5 @@
 package com.example.annect.ui
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.displayCutoutPadding
@@ -91,26 +89,27 @@ fun HomeScreen(
 
 }
 
+
 @Composable
 fun Menu(clickAction: ()->Unit = {},name: String,image:Int){
-        Column(horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            //押したらコネクトモードに
-            modifier = Modifier.clickable { clickAction() }){
-            Card(shape=MaterialTheme.shapes.large,
-                elevation = CardDefaults.cardElevation(
-                    defaultElevation = 10.dp
-                ),
-                modifier = Modifier.padding(top=20.dp,start=10.dp,end=10.dp).width(180.dp).height(250.dp)) {
-                Image(
-                    painterResource(id = image),
-                    contentDescription = null,
-                    modifier = Modifier.size(160.dp)
-                )
-                Text(name, style = MaterialTheme.typography.titleLarge,textAlign = TextAlign.Center)
-            }
-
+    Column(horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        //押したらコネクトモードに
+        modifier = Modifier.clickable { clickAction() }){
+        Card(shape=MaterialTheme.shapes.large,
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
+            ),
+            modifier = Modifier.padding(top=20.dp,start=10.dp,end=10.dp).width(180.dp).height(250.dp)) {
+            Image(
+                painterResource(id = image),
+                contentDescription = null,
+                modifier = Modifier.size(160.dp)
+            )
+            Text(name, style = MaterialTheme.typography.titleLarge,textAlign = TextAlign.Center)
         }
+
+    }
 
 
 }

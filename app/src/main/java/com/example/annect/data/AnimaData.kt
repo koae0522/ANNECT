@@ -35,9 +35,8 @@ data class AnimaData(
 @Composable
 fun DisplayAnima( body:Int,eye:Int,mouth:Int,accessory:Int,modifier: Modifier){
     Log.d(TAG, body.toString())
-    Log.d(TAG, eye.toString())
-    Log.d(TAG, mouth.toString())
-    Log.d(TAG, accessory.toString())
+    Log.d(TAG, bodyData[0].toString())
+
 
     Box(modifier){
         Image(painter = painterResource(id = body), contentDescription = null)
