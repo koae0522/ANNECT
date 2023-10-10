@@ -48,6 +48,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     AnnectScreen( context = LocalContext.current)
+
                 }
             }
         }
