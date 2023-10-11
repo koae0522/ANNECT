@@ -76,7 +76,7 @@ fun HomeScreen(
                 )
 
                 //アニマチャンネルのぼたん
-                Image(painter= painterResource(id = R.drawable.animachanel),
+                Image(painter= painterResource(id = R.drawable.animachannel),
                     contentDescription = null,
                     modifier = Modifier.weight(1f).
                     clickable { onAnimaChannelButtonClicked() }

@@ -54,7 +54,6 @@ fun ConnectScreen(onHomeButtonClicked: ()->Unit = {},
                 elevation = CardDefaults.cardElevation(
                     defaultElevation = 10.dp
                 ),
-
                 ){
                 Text("変身したい生き物を選ぼう", style = MaterialTheme.typography.titleLarge,
                     modifier = Modifier.padding(10.dp)

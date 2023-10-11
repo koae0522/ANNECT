@@ -46,6 +46,7 @@ class USBSerial constructor(
         val driver = availableDrivers?.get(0)
         val connection = manager!!.openDevice(driver?.device ?: return 0)
             ?: // add UsbManager.requestPermission(driver.getDevice(), ..) handling here
+            //接続できなかったとき
             return 0
 
         val port = driver.ports[0] // Most devices have just one port (port 0)
@@ -54,6 +55,7 @@ class USBSerial constructor(
 
         port.dtr = true;//これいるらしいね
 
+        //接続できたとき
         return 1
     }
 

@@ -1,10 +1,16 @@
 package com.example.annect
 
+import android.app.Activity
+import android.content.ContentValues.TAG
 import android.content.Context
+import android.util.Log
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.datastore.dataStore
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -22,6 +28,7 @@ import com.example.annect.ui.HomeScreen
 import com.example.annect.ui.MiniGameScreen
 import com.example.annect.ui.QuizGameScreen
 import com.example.annect.ui.TitleScreen
+import com.example.annect.ui.USBSerial
 import com.example.annect.ui.quizList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
@@ -248,18 +255,18 @@ fun AnnectScreen(
             )
         }
 
-        //ConnectAnimation画面
-        composable(route = AnnectScreen.ConnectAnimation.name){
-            ConnectAnimationScreen(
-               body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory
-                , animal = animaUiState.animal, modifier = Modifier,onNextButtonClicked = {navController.navigate("ConnectFace")}
-            )
-        }
-
         //あそぶ画面
         composable(route=AnnectScreen.ConnectFace.name){
             ConnectFaceScreen(body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
                 animal=animaUiState.animal,context = context)
+        }
+
+        //ConnectAnimation画面
+        composable(route = AnnectScreen.ConnectAnimation.name){
+            ConnectAnimationScreen(
+                body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory
+                , animal = animaUiState.animal, modifier = Modifier,onNextButtonClicked = {navController.navigate("ConnectFace")}
+            )
         }
 
     }
