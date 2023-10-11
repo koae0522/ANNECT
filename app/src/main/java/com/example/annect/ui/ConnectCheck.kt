@@ -64,12 +64,12 @@ Box( modifier = Modifier
             ),
         ) {
             Text(
-                "実機(仮)と接続しよう", style = MaterialTheme.typography.titleLarge,
+                "PetaVasと接続しよう", style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.padding(10.dp).align(Alignment.Start)
             )
         }
 
-        Text("実機(仮)とケーブルで接続してから「接続する」ボタンを押してください",
+        Text("PetaVasとケーブルで接続してから「接続する」ボタンを押してください",
             style = MaterialTheme.typography.titleLarge, fontSize = 25.sp,
             modifier = Modifier.weight(1f).padding(vertical = 15.dp))
 

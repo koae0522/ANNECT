@@ -1,5 +1,7 @@
 package com.example.annect.ui
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.scaleIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -120,11 +122,14 @@ Box(modifier = Modifier
 }
 
 //ポップアップ
-    if(decideButtonFlag){
+    AnimatedVisibility(decideButtonFlag,enter = scaleIn()) {
         Card(
             Modifier
                 .fillMaxSize()
-                .padding(top = 30.dp, bottom = 30.dp, start = 200.dp, end = 200.dp),){
+                .padding(top = 30.dp, bottom = 30.dp, start = 200.dp, end = 200.dp),
+            elevation = CardDefaults.cardElevation(
+                defaultElevation = 10.dp
+            )){
 
             Column( verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(start=50.dp)) {

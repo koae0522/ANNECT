@@ -126,13 +126,15 @@ fun AnimaChannelScreen( name:String,body:Int,eye:Int,mouth:Int,accessory:Int,
 
     //最初の読み込み実行
     readMessages()
-Box(modifier = Modifier.fillMaxSize().background(
+Box(modifier = Modifier.fillMaxSize().
+background(
     Brush.linearGradient(
         colors = listOf(
             Color.White,MaterialTheme.colorScheme.secondaryContainer, )
     )
 
-)){
+)
+ ){
     Column {
 
         Text("あにまちゃんねる",
