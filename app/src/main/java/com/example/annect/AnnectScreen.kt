@@ -136,7 +136,7 @@ fun AnnectScreen(
 
             HomeScreen(
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+                onConnectButtonClicked ={navController.navigate("ConnectFace")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
                 onClearDataClicked={
                     //データ消去
@@ -248,10 +248,10 @@ fun AnnectScreen(
             )
         }
 
-        //あそぶ画面
+        //connectFace画面
         composable(route=AnnectScreen.ConnectFace.name){
             ConnectFaceScreen(body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
-                animal=animaUiState.animal,context = context)
+                animal=animaUiState.animal,context = context, onHomeButtonClicked = {navController.navigate("Home")})
         }
 
         //ConnectAnimation画面

@@ -17,8 +17,10 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -35,7 +37,8 @@ import com.example.annect.R
 import java.util.Timer
 import kotlin.concurrent.schedule
 @Composable
-fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,context:Context){
+fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
+                       context:Context,onHomeButtonClicked:() -> Unit = {}){
 
 
     var backgroundColor=Color(0xFFDAD6CD)
@@ -102,8 +105,8 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,co
                 .graphicsLayer {
                     scaleX = 2F
                     scaleY = 2F
-                }
-                .padding(top = 150.dp)
+                }.offset(y = (70).dp)
+
         )
         Image(painter = painterResource(id = mouthResource),
             contentDescription = null,
@@ -113,8 +116,8 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,co
                 .graphicsLayer {
                     scaleX = 2F
                     scaleY = 2F
-                }
-                .padding(top = 150.dp)
+                }.offset(y = (70).dp)
+
         )
 
         Box(modifier = Modifier.fillMaxSize()){
@@ -140,7 +143,13 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,co
                             },
 
                             )
-                    }) { Text(text = test)}
+                    }) {
+                    //ホームボタン
+                Image(painter=painterResource(id=R.drawable.baseline_home_24),contentDescription = null,
+                    modifier=Modifier.clickable {
+                        onHomeButtonClicked()
+                    })
+                }
                 Box(modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)

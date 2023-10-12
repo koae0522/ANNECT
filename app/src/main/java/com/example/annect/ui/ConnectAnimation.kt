@@ -19,7 +19,8 @@ import com.example.annect.R
 
 
 @Composable
-fun ConnectAnimationScreen(body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,modifier: Modifier,onNextButtonClicked: () -> Unit = {}){
+fun ConnectAnimationScreen(body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
+                           modifier: Modifier,onNextButtonClicked: () -> Unit = {}){
     var bodyImg= ImageBitmap.imageResource(id=body)
     var eyeImg=ImageBitmap.imageResource(id = eye)
     var mouthImg=ImageBitmap.imageResource(id = mouth)
