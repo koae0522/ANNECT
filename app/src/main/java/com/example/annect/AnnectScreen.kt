@@ -136,7 +136,7 @@ fun AnnectScreen(
 
             HomeScreen(
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                onConnectButtonClicked ={navController.navigate("ConnectFace")},
+                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
                 onClearDataClicked={
                     //データ消去
