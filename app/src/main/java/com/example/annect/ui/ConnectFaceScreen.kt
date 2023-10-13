@@ -51,8 +51,8 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
     }
     //えらんだ動物で背景色を変える
     when(animal){
-        "ねこ"-> backgroundColor=Color(0xFFDAD6CD)
-        "ユニコーン"->backgroundColor= Color(0xFFD2A3CB)
+        "ねこ"-> backgroundColor=Color(0xFFafafb0)
+        "ユニコーン"->backgroundColor= Color(0xFFF2F2F2)
     }
 
     if(check == 0){

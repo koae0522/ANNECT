@@ -1,6 +1,5 @@
 package com.example.annect.ui
 
-
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
