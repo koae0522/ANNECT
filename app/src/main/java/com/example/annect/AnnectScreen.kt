@@ -1,6 +1,8 @@
 package com.example.annect
 
 import android.content.Context
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,6 +44,7 @@ enum class AnnectScreen(){
     ConnectAnimation
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AnnectScreen(
     animaViewModel: AnimaViewModel = viewModel() ,context: Context
@@ -135,8 +138,10 @@ fun AnnectScreen(
         composable(route = AnnectScreen.Home.name){
 
             HomeScreen(
+                //デバッグ用。チェック飛ばしてfaceへ遷移
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+//                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+                onConnectButtonClicked ={navController.navigate("ConnectFace")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
                 onClearDataClicked={
                     //データ消去
