@@ -59,7 +59,7 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
 
     //サウンド関連の処理
     lateinit var soundPool: SoundPool
-    //サウンドの設定をカプセル化するクラス　用途と何を再生しているかを設定
+    //サウンドの設定をカプセル化する　用途と何を再生しているかを設定
     val audioAttributes = AudioAttributes.Builder()
         .setUsage(AudioAttributes.USAGE_GAME)
         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
@@ -94,55 +94,28 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
         check = 1
     }
 
-
     var eyeResource by remember { mutableIntStateOf(eye) }
     var mouthResource by remember { mutableIntStateOf(mouth) }
 
-    //まばたき
-//    val timer1 = remember { Timer() }
-//    DisposableEffect(Unit) {
-//        timer1.schedule(100, 1000) {
-//            if(gorogoro==false){
-//                eyeResource=eye
-//                Log.d(ContentValues.TAG,"a")
-//            }
-//        }
-//        onDispose {
-//            timer1.cancel()
-//        }
-//    }
-//    val timer2 = remember { Timer() }
-//    DisposableEffect(Unit) {
-//        timer2.schedule(100, 5000) {
-//            if(gorogoro==false) {
-//                eyeResource = R.drawable.eye2
-//                Log.d(ContentValues.TAG, "b")
-//            }
-//        }
-//        onDispose {
-//            timer2.cancel()
-//        }
-//    }
-
     //lirax値を時間経過で下げるタイマー
-    val timer3 = remember { Timer() }
+    val liraxDownTimer = remember { Timer() }
     DisposableEffect(Unit) {
-        timer3.schedule(100, 30000) {
+        liraxDownTimer.schedule(100, 30000) {
             if(lirax>=0){
                 lirax--
                 Log.d(TAG, lirax.toString())
             }
         }
         onDispose {
-            timer3.cancel()
+            liraxDownTimer.cancel()
         }
     }
 
     //瞬き改修版タイマー
-    val timer4 = remember { Timer() }
+    val blinkTimer = remember { Timer() }
     DisposableEffect(Unit) {
         //5秒に一回
-        timer4.schedule(100, 5000) {
+        blinkTimer.schedule(100, 5000) {
             runBlocking {
                 if(!gorogoro){
                     eyeResource = R.drawable.eye2
@@ -153,7 +126,7 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
             }
         }
         onDispose {
-            timer4.cancel()
+            blinkTimer.cancel()
         }
     }
 
@@ -284,3 +257,29 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
         }
     }
 }
+
+//まばたき
+//    val timer1 = remember { Timer() }
+//    DisposableEffect(Unit) {
+//        timer1.schedule(100, 1000) {
+//            if(gorogoro==false){
+//                eyeResource=eye
+//                Log.d(ContentValues.TAG,"a")
+//            }
+//        }
+//        onDispose {
+//            timer1.cancel()
+//        }
+//    }
+//    val timer2 = remember { Timer() }
+//    DisposableEffect(Unit) {
+//        timer2.schedule(100, 5000) {
+//            if(gorogoro==false) {
+//                eyeResource = R.drawable.eye2
+//                Log.d(ContentValues.TAG, "b")
+//            }
+//        }
+//        onDispose {
+//            timer2.cancel()
+//        }
+//    }
