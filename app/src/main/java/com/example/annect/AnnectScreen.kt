@@ -140,9 +140,9 @@ fun AnnectScreen(
             HomeScreen(
 
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                //onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
                 //デバッグ用。チェック飛ばしてfaceへ遷移
-                onConnectButtonClicked ={navController.navigate("ConnectFace")},
+               // onConnectButtonClicked ={navController.navigate("ConnectFace")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
                 onClearDataClicked={
                     //データ消去
@@ -243,7 +243,7 @@ fun AnnectScreen(
         composable(route = AnnectScreen.ConnectCheck.name) {
             ConnectCheckScreen(onHomeButtonClicked = {navController.navigate("Home")},
                 onNextButtonClicked = { navController.navigate("Connect") },
-                context = context)
+                context = context, viewmodel = animaViewModel)
         }
 
         //AnimaChannel画面
@@ -257,7 +257,8 @@ fun AnnectScreen(
         //connectFace画面
         composable(route=AnnectScreen.ConnectFace.name){
             ConnectFaceScreen(body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
-                animal=animaUiState.animal,context = context, onHomeButtonClicked = {navController.navigate("Home")})
+                animal=animaUiState.animal,context = context, onHomeButtonClicked = {navController.navigate("Home")},viewmodel = animaViewModel,
+                serialData=animaUiState.serialData)
         }
 
         //ConnectAnimation画面

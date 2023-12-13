@@ -31,15 +31,16 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.annect.data.AnimaViewModel
 import java.time.format.TextStyle
 
 //この画面でArduinoとの通信をしたい
 @Composable
-fun ConnectCheckScreen(onHomeButtonClicked: ()->Unit = {}, onNextButtonClicked: () -> Unit = {},context : Context){
+fun ConnectCheckScreen(onHomeButtonClicked: ()->Unit = {}, onNextButtonClicked: () -> Unit = {},context : Context,viewmodel: AnimaViewModel){
     //判定
     var connectCheck : Int by remember { mutableIntStateOf(0) }
     //繋げるかどうかチェック
-    val connect = USBSerial(context)
+    val connect = USBSerial(context,viewmodel)
 Box( modifier = Modifier
         .fillMaxSize()
         .background(

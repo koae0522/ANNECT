@@ -12,6 +12,12 @@ class AnimaViewModel : ViewModel() {
     fun ChangeAnimalName(animalName:String){
         _uiState.value=_uiState.value.copy(animal = animalName)
     }
+
+    fun setConnect(){
+        val n=_uiState.value.serialData+1
+        _uiState.value=_uiState.value.copy(serialData = n )
+    }
+
     fun ChangeAnimaParts(parts: Int){
 
         //パーツ更新(ゴリ押し)

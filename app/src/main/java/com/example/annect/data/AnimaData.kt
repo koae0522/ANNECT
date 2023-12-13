@@ -28,7 +28,9 @@ data class AnimaData(
     //選んでる生き物
     var animal:String="",
     //まばたき
-    var blink:Boolean=false
+    var blink:Boolean=false,
+
+    var serialData:Int = 0
 )
 
 //partsを渡してAnimaを表示する関数

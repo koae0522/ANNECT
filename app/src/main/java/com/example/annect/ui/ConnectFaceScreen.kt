@@ -22,7 +22,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -34,17 +36,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.annect.R
+import com.example.annect.data.AnimaViewModel
 import java.util.Timer
 import kotlin.concurrent.schedule
 import kotlinx.coroutines.*
 
 @Composable
 fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
-                       context:Context,onHomeButtonClicked:() -> Unit = {}){
+                       context:Context,onHomeButtonClicked:() -> Unit = {}, viewmodel : AnimaViewModel,
+                       serialData:Int
+){
 
     var backgroundColor=Color(0xFFDAD6CD)
     var test = "not_recv"
-    val connect =  remember { USBSerial(context)}
+    val connect =  remember { USBSerial(context, viewmodel)}
+    val connectUistate by viewmodel.uiState.collectAsState()
     val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
     var animal_data = ""
     var check by remember {
@@ -146,6 +152,7 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
     }
 
 
+
     //UI
     Box(modifier = Modifier
         .fillMaxSize()
@@ -162,7 +169,8 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                 .graphicsLayer {
                     scaleX = 2F
                     scaleY = 2F
-                }.offset(y = (70).dp)
+                }
+                .offset(y = (70).dp)
         )
 
         //め
@@ -174,7 +182,8 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                 .graphicsLayer {
                     scaleX = 2F
                     scaleY = 2F
-                }.offset(y = (70).dp)
+                }
+                .offset(y = (70).dp)
 
         )
 
@@ -187,7 +196,8 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                 .graphicsLayer {
                     scaleX = 2F
                     scaleY = 2F
-                }.offset(y = (70).dp)
+                }
+                .offset(y = (70).dp)
 
         )
 
@@ -202,8 +212,8 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                             onPress = {
                                 // 押してる
                                 mouthResource = R.drawable.mouth1
-                                test = connect.write(context, "t", 8)
-                                test += "t"
+                                //test = connect.write(context, "t", 8)
+                                //test += "t"
 
                                 tryAwaitRelease()
 
@@ -211,6 +221,7 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                                 mouthResource = mouth
                                 test = connect.write(context, "t", 8)
                                 test += "t"
+                                //connectUistate.serialData += 1
 
 
                                 lirax++
@@ -218,11 +229,11 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
 
                                 Log.d(TAG, lirax.toString())
                             },
-                            onTap={
+                            onTap = {
 
                             }
 
-                            )
+                        )
                     }) {
                     Row(){
                         Image(painter=painterResource(id=R.drawable.baseline_home_24),contentDescription = null,
@@ -230,6 +241,8 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                                 onHomeButtonClicked()
                             }
                         )
+                        Text(serialData.toString())
+                        Text(connectUistate.serialData.toString())
                     }
                 }
                 Box(modifier = Modifier
@@ -242,10 +255,10 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                                 test = connect.write(context, "s", 8)
                                 test += "s"
                                 //ゴロゴロストップの処理
-                                gorogoro=false
-                                lirax=0
+                                gorogoro = false
+                                lirax = 0
                                 vibrator.cancel()
-                                mouthResource=mouth
+                                mouthResource = mouth
                             }
                         )
                     }
