@@ -30,7 +30,11 @@ data class AnimaData(
     //まばたき
     var blink:Boolean=false,
 
-    var serialData:Int = 0
+    var serialData:Int = 0,
+
+    var interaction:Boolean = true,
+
+    var displayFace:Boolean = true
 )
 
 //partsを渡してAnimaを表示する関数

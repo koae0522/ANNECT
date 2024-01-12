@@ -140,10 +140,13 @@ fun AnnectScreen(
             HomeScreen(
 
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+                //onConnectButtonClicked ={navController.navigate("ConnectCheck")},
                 //デバッグ用。チェック飛ばしてfaceへ遷移
-               // onConnectButtonClicked ={navController.navigate("ConnectFace")},
+                //
+                 onConnectButtonClicked ={navController.navigate("ConnectFace")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
+                onInteractionSwitchClicked ={ animaViewModel.ChangeIntaractionState(it) },
+                onDisplayFaceSwitchClicked ={animaViewModel.ChangeDisplayFace(it)},
                 onClearDataClicked={
                     //データ消去
                     runBlocking(Dispatchers.IO) {
@@ -159,7 +162,9 @@ fun AnnectScreen(
                 },
                 //viewModelから値を渡す
                 name = animaUiState.name,
-                body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory)
+                body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
+                interaction = animaUiState.interaction, displayFace = animaUiState.displayFace)
+
         }
 
         //Create画面
@@ -258,7 +263,7 @@ fun AnnectScreen(
         composable(route=AnnectScreen.ConnectFace.name){
             ConnectFaceScreen(body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
                 animal=animaUiState.animal,context = context, onHomeButtonClicked = {navController.navigate("Home")},viewmodel = animaViewModel,
-                serialData=animaUiState.serialData)
+                serialData=animaUiState.serialData, interaction = animaUiState.interaction, displayFace = animaUiState.displayFace)
         }
 
         //ConnectAnimation画面

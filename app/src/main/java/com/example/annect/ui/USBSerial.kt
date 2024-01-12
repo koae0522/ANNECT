@@ -58,7 +58,7 @@ class USBSerial constructor(
 
                     val str = String(_data)
 
-                    connect.setConnect()
+                    connect.setConnect(str)
                 } else {
                     //connect.setConnect()
                 }

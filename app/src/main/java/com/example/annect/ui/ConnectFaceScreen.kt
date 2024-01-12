@@ -1,6 +1,5 @@
 package com.example.annect.ui
 
-import android.content.ContentValues
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Context.*
@@ -42,11 +41,14 @@ import kotlin.concurrent.schedule
 import kotlinx.coroutines.*
 
 @Composable
-fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
-                       context:Context,onHomeButtonClicked:() -> Unit = {}, viewmodel : AnimaViewModel,
-                       serialData:Int
+fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String,
+                      context:Context, onHomeButtonClicked:() -> Unit = {}, viewmodel : AnimaViewModel,
+                      serialData:Int, interaction:Boolean,displayFace:Boolean
 ){
-
+    var recv by remember {
+        mutableStateOf(0)
+    }
+    Log.d("face",displayFace.toString())
     var backgroundColor=Color(0xFFDAD6CD)
     var test = "not_recv"
     val connect =  remember { USBSerial(context, viewmodel)}
@@ -73,13 +75,12 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
     soundPool = SoundPool.Builder()
         .setAudioAttributes(audioAttributes)
         // ストリーム数に応じて
-        .setMaxStreams(1)
+        .setMaxStreams(10)
         .build()
     var catNya = 0
     var catNyaun = 0
     var catAmae = 0
     var catSya = 0
-
     catNya = soundPool.load(context,R.raw.cat_nya,1)
     catNyaun = soundPool.load(context,R.raw.cat_nyaun,1)
     catAmae = soundPool.load(context,R.raw.cat_amae,1)
@@ -107,7 +108,7 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
     val liraxDownTimer = remember { Timer() }
     DisposableEffect(Unit) {
         liraxDownTimer.schedule(100, 30000) {
-            if(lirax>=0){
+            if(lirax>0 && gorogoro){
                 lirax--
                 Log.d(TAG, lirax.toString())
             }
@@ -136,22 +137,73 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
         }
     }
 
-    if(lirax>=10 && !gorogoro){
-        //ゴロゴロ時の処理
-        gorogoro=true
-        vibrator.vibrate(longArrayOf(0,10,10), 1)
-        eyeResource=R.drawable.eye5
-        mouthResource=R.drawable.mouth2
-        Log.d(TAG,"c")
-        soundPool.play(catNya,1.0f,1.0f,0,0,1.0f)
+    //インタラクション用
+    //2秒に一回何らかの動作をさせることができる
+    val interactionTimer = remember { Timer() }
+    DisposableEffect(Unit) {
+        //2秒に一回
+        blinkTimer.schedule(100, 2000) {
+            runBlocking {
+               if(interaction){
+                   val randomNum = (1..10).random()
+                   when(randomNum){
+                       1 -> {
+                           //耳を動かす処理とか
+                           connect.write(context, "c", 8)
+                           Log.d("interaction","インタラクション：1")
+                       }
+                       2-> {
+                           //しっぽを動かす処理とか
+                           connect.write(context, "d", 8)
+                           Log.d("interaction","インタラクション：2")
+                       }
+                       3->{
+                           //鳴き声の処理とか
+                           connect.write(context, "e", 8)
+                           soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+                           Log.d("interaction","インタラクション：3")
+                       }
+                   }
+               }
+            }
+        }
+        onDispose {
+          interactionTimer.cancel()
+        }
     }
 
-    if(lirax<10 && gorogoro){
+    if(lirax>=6 && !gorogoro && interaction){
+        //ゴロゴロ時の処理
+        gorogoro=true
+        soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+        vibrator.vibrate(longArrayOf(0, 10, 10), 1)
+        eyeResource=R.drawable.eye2
+        mouthResource=R.drawable.mouth2
+        Log.d("interaction","ゴロゴロ開始")
+
+    }
+
+    if(lirax<3 && gorogoro){
         gorogoro=false
+        Log.d("interaction","ゴロゴロ終了")
         vibrator.cancel()
     }
 
+    //USB受信
+    DisposableEffect(serialData) {
+        // myUiStateが変更されたときに実行する処理
+        if(lirax>10) {
+            lirax++
+        }
+        when((1..10).random()){
+            1 ->  soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+            2 ->  soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+        }
+        onDispose {
+            // 不要になったときの処理（例: リソースの解放など）
 
+        }
+    }
 
     //UI
     Box(modifier = Modifier
@@ -202,6 +254,16 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
         )
 
         Box(modifier = Modifier.fillMaxSize()){
+
+            if(!displayFace) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(color = backgroundColor)
+                ) {
+
+                }
+            }
             Column {
                 Box(modifier = Modifier
                     .fillMaxWidth()
@@ -212,8 +274,6 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                             onPress = {
                                 // 押してる
                                 mouthResource = R.drawable.mouth1
-                                //test = connect.write(context, "t", 8)
-                                //test += "t"
 
                                 tryAwaitRelease()
 
@@ -222,10 +282,11 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                                 test = connect.write(context, "t", 8)
                                 test += "t"
                                 //connectUistate.serialData += 1
-
-
-                                lirax++
-
+                                when((1..20).random()){
+                                    1 ->  soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+                                    2 ->  soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+                                    3 ->  lirax++
+                                }
 
                                 Log.d(TAG, lirax.toString())
                             },
@@ -240,9 +301,11 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                             modifier=Modifier.clickable {
                                 onHomeButtonClicked()
                             }
+
                         )
-                        Text(serialData.toString())
-                        Text(connectUistate.serialData.toString())
+                       //Text(lirax.toString())
+//                        Text(serialData.toString())
+//                        Text(recv.toString())
                     }
                 }
                 Box(modifier = Modifier
@@ -252,13 +315,18 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                         detectTapGestures(
                             //下側を触った時の処理
                             onTap = {
-                                test = connect.write(context, "s", 8)
-                                test += "s"
+                                connect.write(context, "s", 8)
                                 //ゴロゴロストップの処理
-                                gorogoro = false
-                                lirax = 0
-                                vibrator.cancel()
-                                mouthResource = mouth
+//                                gorogoro = false
+
+
+//                                vibrator.cancel()
+//                                mouthResource = mouth
+                                when((1..20).random()){
+                                    1 ->  soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+                                    2 ->  soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+                                    3 ->  lirax++
+                                }
                             }
                         )
                     }
