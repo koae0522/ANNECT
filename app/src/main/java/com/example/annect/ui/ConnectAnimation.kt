@@ -26,9 +26,12 @@ fun ConnectAnimationScreen(body:Int,eye:Int,mouth:Int,accessory:Int,animal:Strin
     var accessoryImg=ImageBitmap.imageResource(id = accessory)
 
 
-    var animalImg=if(animal=="ねこ")
-        ImageBitmap.imageResource(id = R.drawable.neko3)
-    else ImageBitmap.imageResource(id = R.drawable.unicorn3)
+    var animalImg=when(animal){
+        "ねこ" ->ImageBitmap.imageResource(id = R.drawable.neko3)
+        "ユニコーン"->ImageBitmap.imageResource(id = R.drawable.unicorn3)
+        "うさぎ"->ImageBitmap.imageResource(id = R.drawable.usagi)
+        else -> ImageBitmap.imageResource(id = R.drawable.neko3)
+    }
 
     var timeSec by remember { mutableStateOf(0f) }
     var timeSec_first by remember { mutableStateOf(0) }

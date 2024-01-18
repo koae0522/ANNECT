@@ -104,7 +104,9 @@ Box( modifier = Modifier
                     .padding(8.dp),
                 contentAlignment = Alignment.CenterEnd
             ) {
-                Button(onClick = { if(connectCheck==1) onNextButtonClicked() },
+                Button(onClick = {
+                    // if(connectCheck==1)
+                        onNextButtonClicked() },
                     shape = MaterialTheme.shapes.medium,
                     modifier = Modifier.graphicsLayer {
                         if (connectCheck==0) {

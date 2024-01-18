@@ -90,12 +90,14 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
     when(animal){
         "ねこ"-> backgroundColor=Color(0xFFafafb0)
         "ユニコーン"->backgroundColor= Color(0xFFF2F2F2)
+        "うさぎ"->backgroundColor=Color(0xFFFFFFFF)
     }
 
     if(check == 0){
         when(animal){
             "ねこ"-> animal_data = "a"
             "ユニコーン"->animal_data = "b"
+            "うさぎ"->animal_data="u"
         }
         connect.write(context,animal_data,8)
         check = 1
@@ -195,9 +197,11 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
         if(lirax>10) {
             lirax++
         }
-        when((1..10).random()){
-            1 ->  soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
-            2 ->  soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+        if(animal=="ねこ") {
+            when ((1..10).random()) {
+                1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+                2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+            }
         }
         onDispose {
             // 不要になったときの処理（例: リソースの解放など）
@@ -213,18 +217,32 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
 
 
         //ひげ
-        Image(painter = painterResource(id = R.drawable.hige),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            modifier= Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    scaleX = 2F
-                    scaleY = 2F
-                }
-                .offset(y = (70).dp)
-        )
+        if(animal=="ねこ") {
+            Image(painter = painterResource(id = R.drawable.hige),
+                contentDescription = null,
+                contentScale = ContentScale.FillWidth,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .graphicsLayer {
+                        scaleX = 2F
+                        scaleY = 2F
+                    }
+                    .offset(y = (70).dp)
+            )
+        }
 
+        //うさぎのはな
+//        if(animal=="うさぎ"){
+//            Image( painter = painterResource(id = R.drawable.usagi_hana),
+//                contentDescription = null,
+//                contentScale = ContentScale.FillWidth,
+//                modifier = Modifier.  fillMaxSize().graphicsLayer {
+//                    scaleX = 2F
+//                    scaleY = 2F
+//                } .offset(y = (70).dp,x=(-5).dp)
+//            )
+//
+//        }
         //め
         Image(painter = painterResource(id = eyeResource),
             contentDescription = null,
@@ -282,12 +300,13 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
                                 test = connect.write(context, "t", 8)
                                 test += "t"
                                 //connectUistate.serialData += 1
-                                when((1..20).random()){
-                                    1 ->  soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
-                                    2 ->  soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
-                                    3 ->  lirax++
+                                if(animal=="ねこ") {
+                                    when ((1..20).random()) {
+                                        1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+                                        2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+                                        3 -> lirax++
+                                    }
                                 }
-
                                 Log.d(TAG, lirax.toString())
                             },
                             onTap = {
@@ -322,10 +341,12 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
 
 //                                vibrator.cancel()
 //                                mouthResource = mouth
-                                when((1..20).random()){
-                                    1 ->  soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
-                                    2 ->  soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
-                                    3 ->  lirax++
+                                if(animal=="ねこ") {
+                                    when ((1..20).random()) {
+                                        1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+                                        2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+                                        3 -> lirax++
+                                    }
                                 }
                             }
                         )

@@ -98,14 +98,14 @@ fun HomeScreen(
                     Text(name,modifier = Modifier.padding(15.dp), style = MaterialTheme.typography.titleLarge)
                 }
 
-                Switch(checked = interaction,
-                    onCheckedChange = {
-                        onInteractionSwitchClicked(it)
-                    })
-                Switch(checked = displayFace,
-                    onCheckedChange = {
-                        onDisplayFaceSwitchClicked(it)
-                    })
+//                Switch(checked = interaction,
+//                    onCheckedChange = {
+//                        onInteractionSwitchClicked(it)
+//                    })
+//                Switch(checked = displayFace,
+//                    onCheckedChange = {
+//                        onDisplayFaceSwitchClicked(it)
+//                    })
             }
 
 

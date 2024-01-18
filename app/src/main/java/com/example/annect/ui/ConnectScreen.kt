@@ -33,7 +33,7 @@ import com.example.annect.R
 //この画面でArduinoとの通信をしたい
 @Composable
 fun ConnectScreen(onHomeButtonClicked: ()->Unit = {},
-                  onCatButtonClicked: ()->Unit = {},onUnicornButtonClicked: ()->Unit = {}){
+                  onCatButtonClicked: ()->Unit = {},onUnicornButtonClicked: ()->Unit = {},onUsagiButtonClicked: ()->Unit = {}){
     Box(modifier = Modifier
         .fillMaxSize()
         .background(
@@ -61,11 +61,21 @@ fun ConnectScreen(onHomeButtonClicked: ()->Unit = {},
             }
 
             Row(modifier=Modifier.fillMaxWidth(),horizontalArrangement = Arrangement.Center,) {
-                Image(painter = painterResource(id = R.drawable.neko3), contentDescription = null,
-                    modifier = Modifier.clickable { onCatButtonClicked() })
+                Image(painter = painterResource(id = R.drawable.neko3),
+                    contentDescription = null,
+                    modifier = Modifier.
+                    size(250.dp).
+                    clickable { onCatButtonClicked() })
                 Image(painter = painterResource(id = R.drawable.unicorn3),
                     contentDescription = null,
-                    modifier = Modifier.clickable { onUnicornButtonClicked() })
+                    modifier = Modifier.
+                    size(250.dp).
+                    clickable { onUnicornButtonClicked() })
+                Image(painter = painterResource(id = R.drawable.usagi),
+                    contentDescription = null,
+                    modifier = Modifier.
+                    size(250.dp).
+                    clickable { onUsagiButtonClicked() })
             }
 
             Button(onClick = {onHomeButtonClicked()},
