@@ -32,11 +32,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.annect.data.AnimaViewModel
+import com.example.annect.data.ConnectViewModel
 import java.time.format.TextStyle
 
 //この画面でArduinoとの通信をしたい
 @Composable
-fun ConnectCheckScreen(onHomeButtonClicked: ()->Unit = {}, onNextButtonClicked: () -> Unit = {},context : Context,viewmodel: AnimaViewModel){
+fun ConnectCheckScreen(onHomeButtonClicked: ()->Unit = {}, onNextButtonClicked: () -> Unit = {},context : Context,viewmodel: ConnectViewModel){
     //判定
     var connectCheck : Int by remember { mutableIntStateOf(0) }
     //繋げるかどうかチェック

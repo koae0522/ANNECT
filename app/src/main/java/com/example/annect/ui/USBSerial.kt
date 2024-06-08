@@ -6,6 +6,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.lifecycle.ViewModel
 import com.example.annect.data.AnimaViewModel
+import com.example.annect.data.ConnectViewModel
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
@@ -20,7 +21,7 @@ import java.util.concurrent.Executors
 
 class USBSerial constructor(
     context: Context,
-    viewModel : AnimaViewModel
+    viewModel : ConnectViewModel
 //contextを渡す事でgetSystemServiceメソッドを呼び出せる
 ) {
 
@@ -41,7 +42,7 @@ class USBSerial constructor(
     private val mListener: SerialInputOutputManager.Listener =
         object : SerialInputOutputManager.Listener {
 
-            val connect: AnimaViewModel = viewModel
+            val connect: ConnectViewModel = viewModel
             override fun onRunError(e: java.lang.Exception) {
                 //tvMsg.setText("通信エラーが発生しました。" + e.message)
                 try {

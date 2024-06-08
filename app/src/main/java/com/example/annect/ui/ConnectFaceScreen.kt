@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.annect.R
 import com.example.annect.data.AnimaViewModel
+import com.example.annect.data.ConnectViewModel
 import java.util.Timer
 import kotlin.concurrent.schedule
 import kotlinx.coroutines.*
@@ -43,6 +44,7 @@ import kotlinx.coroutines.*
 @Composable
 fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String,
                       context:Context, onHomeButtonClicked:() -> Unit = {}, viewmodel : AnimaViewModel,
+                      connectViewModel: ConnectViewModel,
                       serialData:Int, interaction:Boolean,displayFace:Boolean
 ){
     var recv by remember {
@@ -51,7 +53,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
     Log.d("face",displayFace.toString())
     var backgroundColor=Color(0xFFDAD6CD)
     var test = "not_recv"
-    val connect =  remember { USBSerial(context, viewmodel)}
+    val connect =  remember { USBSerial(context,  connectViewModel)}
     val connectUistate by viewmodel.uiState.collectAsState()
     val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
     var animal_data = ""

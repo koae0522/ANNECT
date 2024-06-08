@@ -12,6 +12,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.annect.data.AnimaViewModel
+import com.example.annect.data.ConnectViewModel
 import com.example.annect.data.DataRepository
 import com.example.annect.ui.AnimaChannelScreen
 import com.example.annect.ui.ConnectAnimationScreen
@@ -47,10 +48,14 @@ enum class AnnectScreen(){
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AnnectScreen(
-    animaViewModel: AnimaViewModel = viewModel() ,context: Context
+    animaViewModel: AnimaViewModel = viewModel() ,
+    connectViewModel:ConnectViewModel = viewModel(),
+    context: Context
 ){
 
     val animaUiState by animaViewModel.uiState.collectAsState()
+    val connectUiState by connectViewModel.uiState.collectAsState()
+
     val navController = rememberNavController()
 
     //DataStoreの処理
@@ -140,12 +145,12 @@ fun AnnectScreen(
             HomeScreen(
 
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+                //onConnectButtonClicked ={navController.navigate("ConnectCheck")},
                 //デバッグ用。チェック飛ばしてfaceへ遷移
-                //onConnectButtonClicked ={navController.navigate("ConnectFace")},
+                onConnectButtonClicked ={navController.navigate("ConnectFace")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
-                onInteractionSwitchClicked ={ animaViewModel.ChangeIntaractionState(it) },
-                onDisplayFaceSwitchClicked ={animaViewModel.ChangeDisplayFace(it)},
+                onInteractionSwitchClicked ={ connectViewModel.ChangeIntaractionState(it) },
+                onDisplayFaceSwitchClicked ={connectViewModel.ChangeDisplayFace(it)},
                 onClearDataClicked={
                     //データ消去
                     runBlocking(Dispatchers.IO) {
@@ -162,7 +167,7 @@ fun AnnectScreen(
                 //viewModelから値を渡す
                 name = animaUiState.name,
                 body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
-                interaction = animaUiState.interaction, displayFace = animaUiState.displayFace)
+                interaction = connectUiState.interaction, displayFace = connectUiState.displayFace)
 
         }
 
@@ -217,15 +222,15 @@ fun AnnectScreen(
         composable(route = AnnectScreen.Connect.name){
            ConnectScreen(onHomeButtonClicked = {navController.navigate("Home")},
                onCatButtonClicked = {
-                   animaViewModel.ChangeAnimalName("ねこ")
+                   connectViewModel.ChangeAnimalName("ねこ")
                    navController.navigate("ConnectAnimation")
                  },
                onUnicornButtonClicked = {
-                   animaViewModel.ChangeAnimalName("ユニコーン")
+                   connectViewModel.ChangeAnimalName("ユニコーン")
                    navController.navigate("ConnectAnimation")
                 },
                onUsagiButtonClicked = {
-                   animaViewModel.ChangeAnimalName("うさぎ")
+                   connectViewModel.ChangeAnimalName("うさぎ")
                    navController.navigate("ConnectAnimation")
                }
 
@@ -251,7 +256,7 @@ fun AnnectScreen(
         composable(route = AnnectScreen.ConnectCheck.name) {
             ConnectCheckScreen(onHomeButtonClicked = {navController.navigate("Home")},
                 onNextButtonClicked = { navController.navigate("Connect") },
-                context = context, viewmodel = animaViewModel)
+                context = context, viewmodel = connectViewModel)
         }
 
         //AnimaChannel画面
@@ -264,16 +269,25 @@ fun AnnectScreen(
 
         //connectFace画面
         composable(route=AnnectScreen.ConnectFace.name){
-            ConnectFaceScreen(body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
-                animal=animaUiState.animal,context = context, onHomeButtonClicked = {navController.navigate("Home")},viewmodel = animaViewModel,
-                serialData=animaUiState.serialData, interaction = animaUiState.interaction, displayFace = animaUiState.displayFace)
+            ConnectFaceScreen( body = animaUiState.body,
+                eye = animaUiState.eye,
+                mouth = animaUiState.mouth,
+                accessory = animaUiState.accessory,
+                animal = connectUiState.animal,
+                context = context,
+                onHomeButtonClicked = { navController.navigate("Home") },
+                viewmodel = animaViewModel,
+                connectViewModel = connectViewModel,
+                serialData = connectUiState.serialData,
+                interaction = connectUiState.interaction,
+                displayFace = connectUiState.displayFace)
         }
 
         //ConnectAnimation画面
         composable(route = AnnectScreen.ConnectAnimation.name){
             ConnectAnimationScreen(
                 body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory
-                , animal = animaUiState.animal, modifier = Modifier,onNextButtonClicked = {navController.navigate("ConnectFace")}
+                , animal = connectUiState.animal, modifier = Modifier,onNextButtonClicked = {navController.navigate("ConnectFace")}
             )
         }
 

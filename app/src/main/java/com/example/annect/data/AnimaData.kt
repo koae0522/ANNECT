@@ -25,8 +25,11 @@ data class AnimaData(
     var feeling:Int=1,
     //名前
     var name:String="",
-    //選んでる生き物
-    var animal:String="",
+
+)
+
+//connectMode関連のパラメータ
+data class ConnectData(
     //まばたき
     var blink:Boolean=false,
 
@@ -34,8 +37,13 @@ data class AnimaData(
 
     var interaction:Boolean = true,
 
-    var displayFace:Boolean = true
+    var displayFace:Boolean = true,
+
+    //選んでる生き物
+    var animal:String=""
+
 )
+
 
 //partsを渡してAnimaを表示する関数
 @Composable

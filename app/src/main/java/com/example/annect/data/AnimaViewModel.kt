@@ -11,22 +11,7 @@ class AnimaViewModel : ViewModel() {
     //値を公開する
     val uiState:StateFlow<AnimaData> = _uiState.asStateFlow()
 
-    fun ChangeIntaractionState(interaction:Boolean){
-        _uiState.value=_uiState.value.copy(interaction =interaction)
-    }
 
-    fun ChangeDisplayFace(displayFace:Boolean){
-        _uiState.value=_uiState.value.copy(displayFace = displayFace)
-    }
-
-    fun ChangeAnimalName(animalName:String){
-        _uiState.value=_uiState.value.copy(animal = animalName)
-    }
-
-    fun setConnect(str:String){
-        val n=_uiState.value.serialData+1
-        _uiState.value=_uiState.value.copy(serialData = n )
-    }
 
     fun ChangeAnimaParts(parts: Int){
 
