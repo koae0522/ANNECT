@@ -23,6 +23,7 @@ data class AnimaData(
     var love:Int=1,
     //気分(要るかわからんが)
     var feeling:Int=1,
+    
     //名前
     var name:String="",
 
