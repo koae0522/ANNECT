@@ -1,17 +1,74 @@
 package com.example.annect.data
 
-import androidx.lifecycle.ViewModel
+import android.app.Application
+import android.content.Context
+import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-
-class AnimaViewModel : ViewModel() {
-    //値を保持する
-    private val _uiState = MutableStateFlow(AnimaData())
-    //値を公開する
-    val uiState:StateFlow<AnimaData> = _uiState.asStateFlow()
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
 
+class AnimaViewModel @Inject constructor
+    (app: Application) : AndroidViewModel(app) {
+
+    private val context = getApplication<Application>().applicationContext
+    private val _uiState = MutableStateFlow(AnimaData( ) )
+    val uiState:StateFlow<AnimaData>  = _uiState.asStateFlow( )
+
+    private val dao: AnimaDataDao
+    init {
+
+        val db = AnimaDatabase.buildAnimaDatabase(context)
+        dao = db.animaDataDao()
+        viewModelScope.launch(Dispatchers.IO) {
+            if (databaseExists(context)) {
+                val data = dao.getFirstAnimaData()
+                withContext(Dispatchers.Main) {
+                    _uiState.value = data
+                }
+            } else {
+                _uiState.value = AnimaData()
+            }
+        }
+    }
+
+    private fun databaseExists(context: Context): Boolean {
+        val dbFile = context.getDatabasePath("anima_database")
+        return dbFile.exists()
+    }
+    fun changeLaunchFlag(){
+        viewModelScope.launch (Dispatchers.IO) {
+            dao.updateFirstLaunchFlag()
+        }
+    }
+
+    //初回のセーブ
+    fun saveData(){
+        viewModelScope.launch (Dispatchers.IO){
+            dao.insert(
+                AnimaData(
+                    name = _uiState.value.name,
+                    body = _uiState.value.body,
+                    eye = _uiState.value.eye,
+                    mouth = _uiState.value.mouth,
+                    accessory = _uiState.value.accessory,
+                    love = _uiState.value.love,
+                    feeling = _uiState.value.feeling,
+                    boldness = _uiState.value.boldness,
+                    exploration = _uiState.value.exploration,
+                    aggressiveness = _uiState.value.aggressiveness,
+                    sociability = _uiState.value.sociability,
+                    activity = _uiState.value.activity,
+                    first = false,
+                )
+            )
+        }
+    }
 
     fun ChangeAnimaParts(parts: Int){
 
@@ -42,17 +99,6 @@ class AnimaViewModel : ViewModel() {
     fun ChangeAnimaName(name:String){
         //名前更新
         _uiState.value=_uiState.value.copy(name=name)
-    }
-
-    //起動時にデータストアからviewModel更新
-    fun loadData(name:String,body:Int,eye:Int,mouth:Int,accessory:Int,love:Int,feeling:Int){
-        _uiState.value=_uiState.value.copy(name = name)
-        _uiState.value=_uiState.value.copy(body = body)
-        _uiState.value=_uiState.value.copy(eye = eye)
-        _uiState.value=_uiState.value.copy(mouth = mouth)
-        _uiState.value=_uiState.value.copy(accessory = accessory)
-        _uiState.value=_uiState.value.copy(love = love)
-        _uiState.value=_uiState.value.copy(feeling = feeling)
     }
 
     fun increaseLove() {

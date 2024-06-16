@@ -8,25 +8,41 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.example.annect.R
 
+
 //Animaのデータ　値はすべて初期値
+@Entity(tableName = "anima_data_table")
 data class AnimaData(
 
+    @PrimaryKey(autoGenerate = false) var name:String="",
     //体のパーツ
     @DrawableRes var body:Int = R.drawable.body1,
     @DrawableRes var eye:Int = R.drawable.eye1,
     @DrawableRes var mouth:Int = R.drawable.mouth1,
     @DrawableRes var accessory:Int = R.drawable.accessory1,
 
+
     //親愛度
     var love:Int=1,
     //気分(要るかわからんが)
     var feeling:Int=1,
-    
-    //名前
-    var name:String="",
 
+    //大胆さ
+    var boldness:Int =1,
+    //探索性
+    var exploration:Int=1,
+    //攻撃性
+    var aggressiveness :Int=1,
+    //社会性
+    var sociability:Int=1,
+    //活動性
+    var activity:Int=1,
+
+    //初回起動チェック(ここのクラスに書くやつじゃない気がするごめん)
+    var first:Boolean=true,
 )
 
 //connectMode関連のパラメータ

@@ -13,7 +13,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.annect.data.AnimaViewModel
 import com.example.annect.data.ConnectViewModel
-import com.example.annect.data.DataRepository
 import com.example.annect.ui.AnimaChannelScreen
 import com.example.annect.ui.ConnectAnimationScreen
 import com.example.annect.ui.ConnectCheckScreen
@@ -53,64 +52,12 @@ fun AnnectScreen(
     context: Context
 ){
 
+
     val animaUiState by animaViewModel.uiState.collectAsState()
     val connectUiState by connectViewModel.uiState.collectAsState()
 
     val navController = rememberNavController()
 
-    //DataStoreの処理
-    val dataRepository=DataRepository(context)
-
-    //データ読み込み
-    val nameFlow = dataRepository.loadName()
-    val nameState by nameFlow.collectAsState(initial = null)
-
-    val bodyFlow = dataRepository.loadBody()
-    val bodyState by bodyFlow.collectAsState(initial = null)
-
-    val eyeFlow = dataRepository.loadEye()
-    val eyeState by eyeFlow.collectAsState(initial = null)
-
-    val mouthFlow = dataRepository.loadMouth()
-    val mouthState by mouthFlow.collectAsState(initial = null)
-
-    val accessoryFlow = dataRepository.loadAccessory()
-    val accessoryState by accessoryFlow.collectAsState(initial = null)
-
-    val loveFlow = dataRepository.loadLove()
-    val loveState by loveFlow.collectAsState(initial = null)
-
-    val feelingFlow = dataRepository.loadFeeling()
-    val feelingState by feelingFlow.collectAsState(initial = null)
-
-    val createdFlagFlow = dataRepository.loadCreatedFlag()
-    val createdFlagState by createdFlagFlow.collectAsState(initial = null)
-
-
-    var startScreen = "Home"
-
-    ////初回起動チェック　初回でない場合はデータをviewModelに
-    if(createdFlagState==true){
-        //dataStoreからviewModelに読み込み
-        nameState?.let { bodyState?.let { it1 ->
-            eyeState?.let { it2 ->
-                mouthState?.let { it3 ->
-                    accessoryState?.let { it4 ->
-                        loveState?.let { it5 ->
-                            feelingState?.let { it6 ->
-                                animaViewModel.loadData(it,
-                                    it1, it2, it3, it4, it5, it6
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        } }
-    }else{
-        //初回起動の場合はCreateScreenからスタート
-        startScreen= "Create"
-    }
 
     //画面遷移の設定
     NavHost(
@@ -124,17 +71,16 @@ fun AnnectScreen(
         //Title画面
         composable(route=AnnectScreen.Title.name){
             TitleScreen(onScreenClicked = {
+                var startScreen = AnnectScreen.Create.name
+                if (!animaUiState.first) {
+                    animaViewModel.changeLaunchFlag()
+                    startScreen = AnnectScreen.Home.name
+                }
                 navController.navigate(startScreen)
             },
                 onDataDeleteClicked = {
                     runBlocking(Dispatchers.IO) {
-                        dataRepository.clearName()
-                        dataRepository.clearEye()
-                        dataRepository.clearMouth()
-                        dataRepository.clearAccessory()
-                        dataRepository.clearLove()
-                        dataRepository.clearFeeling()
-                        dataRepository.clearCreatedFlag()
+
                     }
                 })
         }
@@ -154,13 +100,7 @@ fun AnnectScreen(
                 onClearDataClicked={
                     //データ消去
                     runBlocking(Dispatchers.IO) {
-                        dataRepository.clearName()
-                        dataRepository.clearEye()
-                        dataRepository.clearMouth()
-                        dataRepository.clearAccessory()
-                        dataRepository.clearLove()
-                        dataRepository.clearFeeling()
-                        dataRepository.clearCreatedFlag()
+
                     }
 
                 },
@@ -194,14 +134,7 @@ fun AnnectScreen(
                 onNextButtonClicked={
                     //次へボタン dataStoreにセーブ（非同期処理)
                     runBlocking(Dispatchers.IO) {
-                        dataRepository.saveBody(animaUiState.body)
-                        dataRepository.saveEye(animaUiState.eye)
-                        dataRepository.saveMouth(animaUiState.mouth)
-                        dataRepository.saveAccessory(animaUiState.accessory)
-                        dataRepository.saveLove(1)
-                        dataRepository.saveaFeeling(1)
-                        dataRepository.saveCreatedFlag(true)
-                        dataRepository.saveName(animaUiState.name)
+                       animaViewModel.saveData()
                     }
                     //ホームへ移動
                     navController.navigate("Home")
@@ -248,7 +181,7 @@ fun AnnectScreen(
             )
 
             runBlocking(Dispatchers.IO) {
-                dataRepository.saveLove(animaViewModel.uiState.value.love)
+               //自分へ　親愛度増加処理を書いてね　
             }
         }
 
