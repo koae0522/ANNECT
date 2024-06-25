@@ -15,4 +15,5 @@ interface AnimaDataDao {
 
     @Query("UPDATE anima_data_table SET first = 0")
     fun updateFirstLaunchFlag()
+
 }
