@@ -20,14 +20,12 @@ class MyAppWidgetProvider : AppWidgetProvider() {
         appWidgetManager: AppWidgetManager,
         appWidgetIds: IntArray
     ){
-    Log.d("とんかつ", "onEnabled")
         CoroutineScope(Dispatchers.Main).launch {
             val data = withContext(Dispatchers.IO) {
                 val db = AnimaDatabase.buildAnimaDatabase(context)
                 val dao = db.animaDataDao()
                 dao.getFirstAnimaData()
             }
-            Log.d("とんかつ",data.toString())
             val appWidgetManager = AppWidgetManager.getInstance(context)
             val views = RemoteViews(context.packageName, R.layout.widget_layout)
             views.setImageViewResource(R.id.imageView1, data.body)
