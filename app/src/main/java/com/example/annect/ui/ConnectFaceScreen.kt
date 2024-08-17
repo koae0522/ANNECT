@@ -3,6 +3,13 @@ package com.example.annect.ui
 import android.content.ContentValues
 import android.content.Context
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.camera.core.AspectRatio
+import androidx.camera.core.CameraSelector
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -30,15 +37,46 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import com.example.annect.R
+import com.example.annect.ui.camera.FaceRecognitionAnalyzer
 import java.util.Timer
 import kotlin.concurrent.schedule
 @Composable
 fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                        context:Context,onHomeButtonClicked:() -> Unit = {}){
+
+
+
+    val context: Context = LocalContext.current
+    val lensFacing = CameraSelector.LENS_FACING_FRONT
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val cameraController: LifecycleCameraController = remember { LifecycleCameraController(context) }
+    var detectedText: String by remember { mutableStateOf("No text detected yet..") }
+    var smile : String by remember { mutableStateOf("no smile")}
+    var smileCheck : Boolean by remember { mutableStateOf(false)}
+
+
+    cameraController.cameraSelector = CameraSelector.Builder()
+        .requireLensFacing(lensFacing)
+        .build()
+    //カメラの設定の追加ができます
+
+    fun smileCheck(smile: String){
+        if (smile.toFloat() > 0.5){
+            smileCheck = true
+        }else{
+            smileCheck = false
+        }
+    }
+
 
 
     var backgroundColor=Color(0xFFDAD6CD)
@@ -92,6 +130,33 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
         }
     }
 
+    Box(){
+        AndroidView(
+            modifier = Modifier
+                //.fillMaxSize()
+                .padding(),
+            factory = { context ->
+                PreviewView(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                                                                                                                                           ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    setBackgroundColor(android.graphics.Color.BLACK)
+                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                    scaleType = PreviewView.ScaleType.FILL_START
+                }.also { previewView ->
+                    startFaceRecognition(
+                        context = context,
+                        cameraController = cameraController,
+                        lifecycleOwner = lifecycleOwner,
+                        previewView = previewView,
+                        onDetectedTextUpdated = ::smileCheck
+                    )
+                }
+            }
+        )
+    }
+
     Box(modifier = Modifier
         .fillMaxSize()
         .background(color = backgroundColor),
@@ -130,16 +195,16 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                             //上側を触った時の処理
                             onPress = {
                                 // 押してる
-                                mouthResource = R.drawable.mouth1
-                                test = connect.write(context, "t", 8)
-                                test += "t"
-
-                                tryAwaitRelease()
-
-                                // 離した
-                                mouthResource = mouth
+//                                mouthResource = R.drawable.mouth1
 //                                test = connect.write(context, "t", 8)
 //                                test += "t"
+//
+//                                tryAwaitRelease()
+//
+//                                // 離した
+//                                mouthResource = mouth
+////                                test = connect.write(context, "t", 8)
+////                                test += "t"
                             },
 
                             )
@@ -163,8 +228,32 @@ fun ConnectFaceScreen( body:Int,eye:Int,mouth:Int,accessory:Int,animal:String,
                         )
                     }
 
-                ){}
+                )
+
+                if(smileCheck){
+                    mouthResource = R.drawable.mouth1
+                }else{
+                    mouthResource = mouth
+                }
             }
         }
     }
+}
+
+private fun startFaceRecognition(
+    context: Context,
+    cameraController: LifecycleCameraController,
+    lifecycleOwner: LifecycleOwner,
+    previewView: PreviewView,
+    onDetectedTextUpdated: (String) -> Unit
+) {
+
+    cameraController.imageAnalysisTargetSize = CameraController.OutputSize(AspectRatio.RATIO_16_9)
+    cameraController.setImageAnalysisAnalyzer(
+        ContextCompat.getMainExecutor(context),
+        FaceRecognitionAnalyzer(onDetectedTextUpdated = onDetectedTextUpdated)
+    )
+
+    cameraController.bindToLifecycle(lifecycleOwner)
+    previewView.controller = cameraController
 }

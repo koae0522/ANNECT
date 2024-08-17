@@ -23,6 +23,11 @@ import com.example.annect.ui.MiniGameScreen
 import com.example.annect.ui.QuizGameScreen
 import com.example.annect.ui.TitleScreen
 import com.example.annect.data.quizList
+import com.example.annect.ui.no_permission.NoPermissionScreen
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
 
@@ -39,9 +44,11 @@ enum class AnnectScreen(){
     ConnectCheck,
     ConnectFace,
     QuizGame,
-    ConnectAnimation
+    ConnectAnimation,
+    Permission
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AnnectScreen(
     animaViewModel: AnimaViewModel = viewModel() ,context: Context
@@ -78,6 +85,12 @@ fun AnnectScreen(
     val createdFlagFlow = dataRepository.loadCreatedFlag()
     val createdFlagState by createdFlagFlow.collectAsState(initial = null)
 
+    val cameraPermissionState: PermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+
+    val onRequest = cameraPermissionState::launchPermissionRequest
+
+    val cameraPermissionGranted = cameraPermissionState.status.isGranted
+
 
     var startScreen = "Home"
 
@@ -101,7 +114,7 @@ fun AnnectScreen(
         } }
     }else{
         //初回起動の場合はCreateScreenからスタート
-        startScreen= "Create"
+        startScreen= "Permission"
     }
 
     //画面遷移の設定
@@ -262,6 +275,13 @@ fun AnnectScreen(
             )
         }
 
-    }
+        composable(route = AnnectScreen.Permission.name){
+            NoPermissionScreen (
+                hasCameraPermission = cameraPermissionGranted,
+                onRequestPermission = onRequest,
+                onNextButtonClicked = {navController.navigate("Create")}
+            )
+        }
 
+    }
 }
