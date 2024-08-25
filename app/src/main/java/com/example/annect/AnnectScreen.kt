@@ -58,6 +58,7 @@ fun AnnectScreen(
 
     val navController = rememberNavController()
 
+    val game =
 
     //画面遷移の設定
     NavHost(

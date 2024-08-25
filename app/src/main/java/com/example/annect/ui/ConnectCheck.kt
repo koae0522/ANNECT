@@ -2,7 +2,6 @@ package com.example.annect.ui
 
 import android.content.Context
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,8 +9,6 @@ import androidx.compose.foundation.layout.displayCutoutPadding
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.AlertDialogDefaults.shape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -28,12 +25,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.annect.data.AnimaViewModel
 import com.example.annect.data.ConnectViewModel
-import java.time.format.TextStyle
 
 //この画面でArduinoとの通信をしたい
 @Composable
@@ -41,7 +35,13 @@ fun ConnectCheckScreen(onHomeButtonClicked: ()->Unit = {}, onNextButtonClicked: 
     //判定
     var connectCheck : Int by remember { mutableIntStateOf(0) }
     //繋げるかどうかチェック
-    val connect = USBSerial(context,viewmodel)
+    var data : String by remember { mutableStateOf("a") }
+    val connect  = USBSerial { receivedData ->
+        // ここで受信したデータ(receivedData) を処理します。
+        // 例えば、TextView に表示するなど。
+        data = receivedData
+    }
+
 Box( modifier = Modifier
         .fillMaxSize()
         .background(

@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -53,7 +52,12 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
     Log.d("face",displayFace.toString())
     var backgroundColor=Color(0xFFDAD6CD)
     var test = "not_recv"
-    val connect =  remember { USBSerial(context,  connectViewModel)}
+    val connect =  remember { USBSerial { receivedData ->
+        // ここで受信したデータ(receivedData) を処理します。
+        // Disposableも全部ここにロジック組み込めるかも
+        test = receivedData
+    }}
+    connect.open(context)//ここ一回だけにしたい
     val connectUistate by viewmodel.uiState.collectAsState()
     val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
     var animal_data = ""
@@ -101,7 +105,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
             "ユニコーン"->animal_data = "b"
             "うさぎ"->animal_data="u"
         }
-        connect.write(context,animal_data,8)
+        connect.write(animal_data,8)
         check = 1
     }
 
@@ -153,17 +157,17 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
                    when(randomNum){
                        1 -> {
                            //耳を動かす処理とか
-                           connect.write(context, "c", 8)
+                           connect.write("c", 8)
                            Log.d("interaction","インタラクション：1")
                        }
                        2-> {
                            //しっぽを動かす処理とか
-                           connect.write(context, "d", 8)
+                           connect.write("d", 8)
                            Log.d("interaction","インタラクション：2")
                        }
                        3->{
                            //鳴き声の処理とか
-                           connect.write(context, "e", 8)
+                           connect.write( "e", 8)
                            soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
                            Log.d("interaction","インタラクション：3")
                        }
@@ -299,7 +303,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
 
                                 // 離した
                                 mouthResource = mouth
-                                test = connect.write(context, "t", 8)
+                                test = connect.write("t", 8)
                                 test += "t"
                                 //connectUistate.serialData += 1
                                 if(animal=="ねこ") {
@@ -336,7 +340,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
                         detectTapGestures(
                             //下側を触った時の処理
                             onTap = {
-                                connect.write(context, "s", 8)
+                                connect.write("s", 8)
                                 //ゴロゴロストップの処理
 //                                gorogoro = false
 
