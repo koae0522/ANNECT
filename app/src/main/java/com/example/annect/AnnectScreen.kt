@@ -89,11 +89,10 @@ fun AnnectScreen(
         composable(route = AnnectScreen.Home.name){
 
             HomeScreen(
-
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                //onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
                 //デバッグ用。チェック飛ばしてfaceへ遷移
-                onConnectButtonClicked ={navController.navigate("ConnectFace")},
+                //onConnectButtonClicked ={navController.navigate("ConnectFace")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
                 onInteractionSwitchClicked ={ connectViewModel.ChangeIntaractionState(it) },
                 onDisplayFaceSwitchClicked ={connectViewModel.ChangeDisplayFace(it)},
