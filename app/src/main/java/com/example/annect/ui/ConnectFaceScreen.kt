@@ -1,10 +1,7 @@
 package com.example.annect.ui
 
-import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Context.VIBRATOR_SERVICE
-import android.media.AudioAttributes
-import android.media.SoundPool
 import android.os.Vibrator
 import android.util.Log
 import androidx.compose.foundation.Image
@@ -19,6 +16,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -34,7 +32,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.annect.R
-import com.example.annect.Sound
+import com.example.annect.connect.Lirax
+import com.example.annect.connect.Sound
 import com.example.annect.data.AnimaViewModel
 import com.example.annect.data.ConnectViewModel
 import kotlinx.coroutines.delay
@@ -50,14 +49,21 @@ fun ConnectFaceScreen(
     connectViewModel: ConnectViewModel,
     serialData: Int, interaction: Boolean, displayFace: Boolean
 ) {
-    
+
     //サウンドのクラス
-    var sound by remember { mutableStateOf(Sound(context)) }
-    sound.soundBuild()
+    val sound by remember { mutableStateOf(Sound(context)) }
+
+    //リラックスのクラス
+    val liraxClass by remember { mutableStateOf(Lirax()) }
+    LaunchedEffect(Unit) {
+        liraxClass.updateState()
+    }
+    val lirax by liraxClass.uiState.collectAsState()
 
     var recv by remember {
         mutableStateOf(0)
     }
+
     Log.d("face", displayFace.toString())
     var backgroundColor = Color(0xFFDAD6CD)
     var test = "not_recv"
@@ -71,30 +77,7 @@ fun ConnectFaceScreen(
     var gorogoro by remember {
         mutableStateOf(false)
     }
-    var lirax by remember {
-        mutableStateOf(0)
-    }
 
-    //サウンド関連の処理
-    lateinit var soundPool: SoundPool
-    //サウンドの設定をカプセル化する　用途と何を再生しているかを設定
-    val audioAttributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_GAME)
-        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-        .build()
-    soundPool = SoundPool.Builder()
-        .setAudioAttributes(audioAttributes)
-        // ストリーム数に応じて
-        .setMaxStreams(10)
-        .build()
-    var catNya = 0
-    var catNyaun = 0
-    var catAmae = 0
-    var catSya = 0
-    catNya = soundPool.load(context, R.raw.cat_nya, 1)
-    catNyaun = soundPool.load(context, R.raw.cat_nyaun, 1)
-    catAmae = soundPool.load(context, R.raw.cat_amae, 1)
-    catSya = soundPool.load(context, R.raw.cat_sya, 1)
 
     //えらんだ動物で背景色を変える
     when (animal) {
@@ -115,20 +98,6 @@ fun ConnectFaceScreen(
 
     var eyeResource by remember { mutableIntStateOf(eye) }
     var mouthResource by remember { mutableIntStateOf(mouth) }
-
-    //lirax値を時間経過で下げるタイマー
-    val liraxDownTimer = remember { Timer() }
-    DisposableEffect(Unit) {
-        liraxDownTimer.schedule(100, 30000) {
-            if (lirax > 0 && gorogoro) {
-                lirax--
-                Log.d(TAG, lirax.toString())
-            }
-        }
-        onDispose {
-            liraxDownTimer.cancel()
-        }
-    }
 
     //瞬き改修版タイマー
     val blinkTimer = remember { Timer() }
@@ -174,7 +143,7 @@ fun ConnectFaceScreen(
                         3 -> {
                             //鳴き声の処理とか
                             connect.write(context, "e", 8)
-                            soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+                            sound.playSound(sound.catNya)
                             Log.d("interaction", "インタラクション：3")
                         }
                     }
@@ -186,10 +155,10 @@ fun ConnectFaceScreen(
         }
     }
 
-    if (lirax >= 6 && !gorogoro && interaction) {
+    if (lirax == true) {
         //ゴロゴロ時の処理
         gorogoro = true
-        soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+        sound.playSound(sound.catNya)
         vibrator.vibrate(longArrayOf(0, 10, 10), 1)
         eyeResource = R.drawable.eye2
         mouthResource = R.drawable.mouth2
@@ -197,22 +166,13 @@ fun ConnectFaceScreen(
 
     }
 
-    if (lirax < 3 && gorogoro) {
-        gorogoro = false
-        Log.d("interaction", "ゴロゴロ終了")
-        vibrator.cancel()
-    }
-
     //USB受信
     DisposableEffect(serialData) {
         // myUiStateが変更されたときに実行する処理
-        if (lirax > 10) {
-            lirax++
-        }
         if (animal == "ねこ") {
             when ((1..10).random()) {
-                1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
-                2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+                1 -> sound.playSound(sound.catNya)
+                2 -> sound.playSound(sound.catNyaun)
             }
         }
         onDispose {
@@ -316,12 +276,11 @@ fun ConnectFaceScreen(
                                 //connectUistate.serialData += 1
                                 if (animal == "ねこ") {
                                     when ((1..20).random()) {
-                                        1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
-                                        2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
-                                        3 -> lirax++
+                                        1 -> sound.playSound(sound.catNya)
+                                        2 -> sound.playSound(sound.catNyaun)
                                     }
                                 }
-                                Log.d(TAG, lirax.toString())
+//                                Log.d(TAG, lirax.toString())
                             },
                             onTap = {
 
@@ -358,9 +317,8 @@ fun ConnectFaceScreen(
 //                                mouthResource = mouth
                                 if (animal == "ねこ") {
                                     when ((1..20).random()) {
-                                        1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
-                                        2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
-                                        3 -> lirax++
+                                        1 -> sound.playSound(sound.catNya)
+                                        2 -> sound.playSound(sound.catNyaun)
                                     }
                                 }
                             }
@@ -374,29 +332,3 @@ fun ConnectFaceScreen(
         }
     }
 }
-
-//まばたき
-//    val timer1 = remember { Timer() }
-//    DisposableEffect(Unit) {
-//        timer1.schedule(100, 1000) {
-//            if(gorogoro==false){
-//                eyeResource=eye
-//                Log.d(ContentValues.TAG,"a")
-//            }
-//        }
-//        onDispose {
-//            timer1.cancel()
-//        }
-//    }
-//    val timer2 = remember { Timer() }
-//    DisposableEffect(Unit) {
-//        timer2.schedule(100, 5000) {
-//            if(gorogoro==false) {
-//                eyeResource = R.drawable.eye2
-//                Log.d(ContentValues.TAG, "b")
-//            }
-//        }
-//        onDispose {
-//            timer2.cancel()
-//        }
-//    }

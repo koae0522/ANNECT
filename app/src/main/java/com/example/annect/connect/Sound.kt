@@ -1,8 +1,9 @@
-package com.example.annect
+package com.example.annect.connect
 
 import android.content.Context
 import android.media.AudioAttributes
 import android.media.SoundPool
+import com.example.annect.R
 
 class Sound(context: Context) {
     //サウンド関連の処理
@@ -14,12 +15,20 @@ class Sound(context: Context) {
         .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
         .build()
 
-    var catNya = soundPool.load(context, R.raw.cat_nya, 1)
-    var catNyaun = soundPool.load(context, R.raw.cat_nyaun, 1)
-    var catAmae = soundPool.load(context, R.raw.cat_amae, 1)
-    var catSya = soundPool.load(context, R.raw.cat_sya, 1)
+    var catNya: Int = 0
+    var catNyaun: Int = 0
+    var catAmae: Int = 0
+    var catSya: Int = 0
 
-    fun soundBuild() {
+    init {
+        soundBuild()
+        catNya = soundPool.load(context, R.raw.cat_nya, 1)
+        catNyaun = soundPool.load(context, R.raw.cat_nyaun, 1)
+        catAmae = soundPool.load(context, R.raw.cat_amae, 1)
+        catSya = soundPool.load(context, R.raw.cat_sya, 1)
+    }
+
+    private fun soundBuild() {
         soundPool = SoundPool.Builder()
             .setAudioAttributes(audioAttributes)
             // ストリーム数に応じて
