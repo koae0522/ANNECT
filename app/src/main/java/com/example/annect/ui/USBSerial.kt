@@ -1,154 +1,141 @@
-package com.example.annect.ui
+package com.example.arduinoserialsample
 
 import android.content.Context
+import android.hardware.usb.UsbDeviceConnection
 import android.hardware.usb.UsbManager
-import android.os.Handler
-import android.os.Looper
-import androidx.lifecycle.ViewModel
-import com.example.annect.data.AnimaViewModel
-import com.example.annect.data.ConnectViewModel
 import com.hoho.android.usbserial.driver.UsbSerialDriver
 import com.hoho.android.usbserial.driver.UsbSerialPort
 import com.hoho.android.usbserial.driver.UsbSerialProber
 import com.hoho.android.usbserial.util.SerialInputOutputManager
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.launch
 import java.io.IOException
 import java.util.concurrent.Executors
 
 
-class USBSerial constructor(
-    context: Context,
-    viewModel : ConnectViewModel
-//contextを渡す事でgetSystemServiceメソッドを呼び出せる
+class USBSerial(
+    loadData: (String) -> Unit
 ) {
-
-    private val uiScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private val usb: UsbSerialDriver? = null
     private var manager: UsbManager? = null
-    private var usbSerialPort: UsbSerialPort? = null
     private var serialIoManager: SerialInputOutputManager? = null
     private var availableDrivers: MutableList<UsbSerialDriver>? = null
     private val executor = Executors.newSingleThreadExecutor()
-    private val connectViewModel: ViewModel = viewModel
-    //使うためのmanagerと使える機器の種類を格納するavailableDriversと実際に繋ぐdriverを先に宣言しておく
-    //ほとんどのメソッドで使うためである。
-    //portに関してはclass宣言時はnullの可能性があるためメソッド内で定義している。
+    private var driver: UsbSerialDriver? = null
+    private var connection: UsbDeviceConnection? = null
+    private var port: UsbSerialPort? = null
+    private var connected = false
+    private var baudRate = 115200
 
-    fun runOnUiThread(block: Runnable) = uiScope.launch { block }
-
+    //read用のコルーチンがないのでリスナーで対応します
     private val mListener: SerialInputOutputManager.Listener =
         object : SerialInputOutputManager.Listener {
 
-            val connect: ConnectViewModel = viewModel
             override fun onRunError(e: java.lang.Exception) {
-                //tvMsg.setText("通信エラーが発生しました。" + e.message)
+
                 try {
-                    //usb.close()
-                } catch (e1: IOException) {
-
+                    serialIoManager?.stop()
+                    serialIoManager = null
+                    connected = false
+                } catch (e: IOException) {
+                    e.printStackTrace()
                 }
-                //serialIoManager?.stop()
-            }
+            }//エラー処理
 
-            override fun onNewData(_data: ByteArray) {
+            override fun onNewData(data: ByteArray) {
 
-                if (_data != null) {
+                val str = String(data)
 
-                    val str = String(_data)
+                loadData(str)
 
-                    connect.setConnect(str)
-                } else {
-                    //connect.setConnect()
-                }
-
-            }
+            }//来たデータをloadDataで処理
 
         }
 
+    fun open(context: Context, rate: Int = 115200): String {
 
-    fun open(context: Context): Int {
+        if(connected) return "AlreadyConnected"
+        //接続されているなら接続処理の必要はないのでreturn
+
+        baudRate = rate
+        //通信のbaudRateの設定、初期値は115200に設定してます
 
         manager = context.getSystemService(Context.USB_SERVICE) as UsbManager?
-        availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager)
-        if (availableDrivers?.isEmpty() == true) {
-            return 0
+        //USBのmanagerを呼び出し
+
+        if(manager == null){
+            return "NoManager"
         }
+        //managerがない場合はおかしいのでNoMangerで返却
 
-        // Open a connection to the first available driver.
-        // Open a connection to the first available driver.
-        val driver = availableDrivers?.get(0)
-        val connection = manager!!.openDevice(driver?.device ?: return 0)
-            ?: // add UsbManager.requestPermission(driver.getDevice(), ..) handling here
-            return 0
 
-        val port = driver.ports[0] // Most devices have just one port (port 0)
+        availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager)
+        //USBのmanagerを使って現在使えるUSB接続デバイス->USBSerialDriverを列挙
 
-        port.open(connection)
+        if (availableDrivers?.isEmpty() == true) {
+            return "NoDrivers"
+        }
+        //もしないならnullエラーを防ぐためNoDriversとしてreturn
+
+        driver = availableDrivers?.get(0) ?: return "NoDriver"
+        //基本的にはUSB接続しているデバイスは一個しかないので0番を取得することで目的のデバイスと通信ができる。
+        //もし選びたい場合はdriverをUIに列挙して選ぶ処理を実装する必要があります。
+        //availableDriversはUSBSerialDriverを保持するMutableListなのでdriverをセットするメソッドを用意するのもよいと思います
+        //TODO  選べるようにもしたい
+
+        connection = manager?.openDevice(driver?.device ?: return "NoDevice or Driver") ?: return "NoConnection"
+        //準備できたのでopenDeviceで開いてあげます。managerを最初はnullという関係上アサーション演算子でnon-nullであることを宣言しないと構文上エラーになります。
+
+        port = driver?.ports?.get(0) ?: return "NoPort"
+        //大体は接続ポートが一個しかないので0と決めうってますが違う場合は1かエラーがでないポートを探すように変更してください
+        //TODO  動的にportを選択できるようにしたい
+
+        port?.open(connection) ?: return "NoPort or WrongPort"
+        //portをopenします,nullだったらまちがえてるので返却
 
         serialIoManager = SerialInputOutputManager(port, mListener)
         executor.submit(serialIoManager)
+        //portに対してListenerを設定します
 
-        port.dtr = true;//これいるらしいね
+        port?.dtr = true
+        //シリアル通信をする上でDTRをtrueつまり1を送信することで相手に正常動作である事を伝えます
+        //これをしないと正常に動きません
 
-        return 1
+        connected = true
+        //接続されたことをtrueとして保持します。
+
+        return "connected"
     }
 
-    fun write(context: Context, send_data: String, data_bits: Int): String {
+    fun write(send_data: String, data_bits: Int = 8): String {
 
-        manager = context.getSystemService(Context.USB_SERVICE) as UsbManager?
-        availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager)
-        if (availableDrivers?.isEmpty() == true) {
-            return "NG"
-        }
+        if(!connected) return "NotConnected"
 
-        val driver = availableDrivers?.get(0)
-        val connection = manager!!.openDevice(driver?.device ?: return "NG")
-            ?: return "NG"
+        port?.setParameters(baudRate, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE)?:return "NG"
+        //送るパラメータの設定。色々いじれそうですがあんまり解ってませｎ、、、。
+        //baudrate,data長,ストップビット,パリティありなし　だと思います。
+        // arduinoはこれで通信可能です。ほかの機器はいじる必要があるかもです。
 
-        val port = driver.ports[0] // Most devices have just one port (port 0)
-
-        port.open(connection)
-
-        serialIoManager = SerialInputOutputManager(port, mListener)
-        executor.submit(serialIoManager)
-
-        port.setParameters(115200, 8, UsbSerialPort.STOPBITS_1, UsbSerialPort.PARITY_NONE)
-
-        port.write(send_data.toByteArray(), 100);
-        //writeしたいdataに合わせて、
+        port?.write(send_data.toByteArray(), 100)?:return "NG"
+        //writeしたいdataをbyteにして渡します。timeoutを持たせる事で値が連続で送られないようにします。
+        //timeoutは好きに変えてください
         return "sendOK"
 
-
     }
 
-    fun close(context: Context): String {
-
-        manager = context.getSystemService(Context.USB_SERVICE) as UsbManager?
-        availableDrivers = UsbSerialProber.getDefaultProber().findAllDrivers(manager)
-        if (availableDrivers?.isEmpty() == true) {
-            return "NG"
-        }
-
-        val driver = availableDrivers?.get(0)
-        val connection = manager!!.openDevice(driver?.device ?: return "NG")
-            ?: return "connection null NG"
-
-        var port =
-            driver.ports[0] ?: return "port null NG"// Most devices have just one port (port 0
+    fun close(): String {
 
         try {
-            port.close()
+            serialIoManager?.stop()?: return "close error manager"
+            serialIoManager = null
+            port?.close() ?: return "close error port"
+            connection?.close()?: return "close error connection"
+            connected = false
+            //いっぱい閉じます
         } catch (e: Exception) {
+            e.printStackTrace()
             return "close ng"
         }
 
         return "close ok"
 
-
-        //
     }
 
 }
