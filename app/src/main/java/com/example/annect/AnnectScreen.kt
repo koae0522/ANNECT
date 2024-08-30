@@ -25,8 +25,13 @@ import com.example.annect.ui.MiniGameScreen
 import com.example.annect.ui.QuizGameScreen
 import com.example.annect.ui.TitleScreen
 import com.example.annect.data.quizList
+import com.example.annect.ui.no_permission.NoPermissionScreen
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
+import com.google.accompanist.permissions.PermissionState
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
 
 //画面の名前を追加
@@ -41,10 +46,11 @@ enum class AnnectScreen(){
     ConnectCheck,
     ConnectFace,
     QuizGame,
-    ConnectAnimation
+    ConnectAnimation,
+    Permission
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun AnnectScreen(
     animaViewModel: AnimaViewModel = viewModel() ,
@@ -57,6 +63,12 @@ fun AnnectScreen(
     val connectUiState by connectViewModel.uiState.collectAsState()
 
     val navController = rememberNavController()
+
+    val cameraPermissionState: PermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+
+    val onRequest = cameraPermissionState::launchPermissionRequest
+
+    val cameraPermissionGranted = cameraPermissionState.status.isGranted
 
 
     //画面遷移の設定
@@ -90,7 +102,9 @@ fun AnnectScreen(
 
             HomeScreen(
                 onMiniGameButtonClicked ={navController.navigate("MiniGame")},
-                onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+                //onConnectButtonClicked ={navController.navigate("ConnectCheck")},
+                onConnectButtonClicked ={navController.navigate("Permission")},
+                //カメラの権限取得を無理やりぶち込んでますPermission -> ConnectCheckに進ませてます。パン屋
                 //デバッグ用。チェック飛ばしてfaceへ遷移
                 //onConnectButtonClicked ={navController.navigate("ConnectFace")},
                 onAnimaChannelButtonClicked = {navController.navigate("AnimaChannel")},
@@ -220,6 +234,14 @@ fun AnnectScreen(
             ConnectAnimationScreen(
                 body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory
                 , animal = connectUiState.animal, modifier = Modifier,onNextButtonClicked = {navController.navigate("ConnectFace")}
+            )
+        }
+
+        composable(route = AnnectScreen.Permission.name){
+            NoPermissionScreen (
+                hasCameraPermission = cameraPermissionGranted,
+                onRequestPermission = onRequest,
+                onNextButtonClicked = {navController.navigate("ConnectCheck")}
             )
         }
 

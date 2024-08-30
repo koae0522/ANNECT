@@ -45,6 +45,8 @@ fun ConnectScreen(onHomeButtonClicked: ()->Unit = {},
                 )
             )
         )){
+
+
         Column(modifier = Modifier
             .displayCutoutPadding()
             .fillMaxWidth()
