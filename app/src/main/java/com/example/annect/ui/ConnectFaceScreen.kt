@@ -3,10 +3,19 @@ package com.example.annect.ui
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Context.*
+import android.graphics.PointF
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.Vibrator
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.camera.core.AspectRatio
+import androidx.camera.core.CameraSelector
+import androidx.camera.view.CameraController
+import androidx.camera.view.LifecycleCameraController
+import androidx.camera.view.PreviewView
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,21 +30,37 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
+import androidx.compose.ui.graphics.PointMode
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.LifecycleOwner
 import com.example.annect.R
 import com.example.annect.data.AnimaViewModel
 import com.example.annect.data.ConnectViewModel
+import com.example.annect.ui.camera.FaceRecognitionAnalyzer
+import com.example.annect.ui.camera.angleCalc
+import com.example.annect.ui.camera.distanceCalc
 import java.util.Timer
 import kotlin.concurrent.schedule
 import kotlinx.coroutines.*
@@ -46,6 +71,49 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
                       connectViewModel: ConnectViewModel,
                       serialData:Int, interaction:Boolean,displayFace:Boolean
 ){
+    //Camera用変数準備
+    val context: Context = LocalContext.current
+    val lensFacing = CameraSelector.LENS_FACING_FRONT
+    val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
+    val cameraController: LifecycleCameraController = remember { LifecycleCameraController(context) }
+    val screenWidth = remember { mutableIntStateOf(context.resources.displayMetrics.widthPixels) }
+    val screenHeight = remember { mutableIntStateOf(context.resources.displayMetrics.heightPixels) }
+
+    cameraController.cameraSelector = CameraSelector.Builder()
+        .requireLensFacing(lensFacing)
+        .build()
+
+    var smileCheck : Boolean by remember { mutableStateOf(false)}
+
+    //angleに0から360度の角度が度数法で入ってます。（優しさでラジアンから直しておいたよ。）
+    //distanceにスクリーン中心からの現在の自分の顔の距離がでるよ(優しさで0-20までの値に割合で変化するようにしてるよ)
+    //うまく使ってください。
+    var angle by remember { mutableFloatStateOf(0f) }
+    var distance by remember { mutableFloatStateOf(0f) }
+
+
+    //カメラの設定の追加ができます
+
+    //笑顔判定と顔の現在の角度、位置を最大20で変数に代入するすごい関数。
+    // 好きな秒数ごとに反映変更したければanalyzerの中のTHROTTLE_TIMEOUT_MSを変更すること
+    fun imageProc(box: Rect,smile: String,imageWidth:Float,imageHeight:Float){
+        if (smile.toFloat() > 0.5){
+            smileCheck = true
+        }else{
+            smileCheck = false
+        }
+
+        angle = angleCalc(box,imageWidth,imageHeight,screenWidth.value,screenHeight.value)
+        distance = distanceCalc(box,imageWidth,imageHeight,screenWidth.value,screenHeight.value)
+
+
+
+    }
+
+    //ここまで
+
+
+
     var recv by remember {
         mutableStateOf(0)
     }
@@ -56,9 +124,9 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
         // ここで受信したデータ(receivedData) を処理します。
         // Disposableも全部ここにロジック組み込めるかも
         test = receivedData
-    }}
+    }
+    }
     connect.open(context)//ここ一回だけにしたい
-    val connectUistate by viewmodel.uiState.collectAsState()
     val vibrator = context.getSystemService(VIBRATOR_SERVICE) as Vibrator
     var animal_data = ""
     var check by remember {
@@ -112,7 +180,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
     var eyeResource by remember { mutableIntStateOf(eye) }
     var mouthResource by remember { mutableIntStateOf(mouth) }
 
-    //lirax値を時間経過で下げるタイマー
+    //lirax値を時     間経過で下げるタイマー
     val liraxDownTimer = remember { Timer() }
     DisposableEffect(Unit) {
         liraxDownTimer.schedule(100, 30000) {
@@ -215,6 +283,41 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
         }
     }
 
+    if (smileCheck) {
+        mouthResource = R.drawable.mouth1
+    }else{
+        mouthResource = mouth
+    }
+
+//
+
+    Box(){
+        AndroidView(
+            modifier = Modifier
+                .fillMaxSize()
+            ,
+            factory = { context ->
+                PreviewView(context).apply {
+                    layoutParams = LinearLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT
+                    )
+                    setBackgroundColor(android.graphics.Color.BLACK)
+                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                    scaleType = PreviewView.ScaleType.FILL_START
+                }.also { previewView ->
+                    startFaceRecognition(
+                        context = context,
+                        cameraController = cameraController,
+                        lifecycleOwner = lifecycleOwner,
+                        previewView = previewView,
+                        onDetectedTextUpdated = ::imageProc
+                    )
+                }
+            }
+        )
+    }
+
     //UI
     Box(modifier = Modifier
         .fillMaxSize()
@@ -306,7 +409,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
                                 test = connect.write("t", 8)
                                 test += "t"
                                 //connectUistate.serialData += 1
-                                if(animal=="ねこ") {
+                                if (animal == "ねこ") {
                                     when ((1..20).random()) {
                                         1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
                                         2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
@@ -347,7 +450,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
 
 //                                vibrator.cancel()
 //                                mouthResource = mouth
-                                if(animal=="ねこ") {
+                                if (animal == "ねこ") {
                                     when ((1..20).random()) {
                                         1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
                                         2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
@@ -362,8 +465,31 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
 
                 }
             }
+
+            Text(text = "angle:$angle,distance:$distance",modifier = Modifier.align(Alignment.TopStart))
+
         }
+
     }
+
+}
+
+private fun startFaceRecognition(
+    context: Context,
+    cameraController: LifecycleCameraController,
+    lifecycleOwner: LifecycleOwner,
+    previewView: PreviewView,
+    onDetectedTextUpdated: (Rect, String,Float,Float) -> Unit
+) {
+
+    cameraController.imageAnalysisTargetSize = CameraController.OutputSize(AspectRatio.RATIO_16_9)
+    cameraController.setImageAnalysisAnalyzer(
+        ContextCompat.getMainExecutor(context),
+        FaceRecognitionAnalyzer(onDetectedTextUpdated = onDetectedTextUpdated)
+    )
+
+    cameraController.bindToLifecycle(lifecycleOwner)
+    previewView.controller = cameraController
 }
 
 //まばたき

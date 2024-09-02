@@ -1,4 +1,4 @@
-package com.example.arduinoserialsample
+package com.example.annect.ui
 
 import android.content.Context
 import android.hardware.usb.UsbDeviceConnection

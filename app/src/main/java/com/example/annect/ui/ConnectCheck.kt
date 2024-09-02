@@ -33,7 +33,7 @@ import com.example.annect.data.ConnectViewModel
 @Composable
 fun ConnectCheckScreen(onHomeButtonClicked: ()->Unit = {}, onNextButtonClicked: () -> Unit = {},context : Context,viewmodel: ConnectViewModel){
     //判定
-    var connectCheck : Int by remember { mutableIntStateOf(0) }
+    var connectCheck : String by remember { mutableStateOf("") }
     //繋げるかどうかチェック
     var data : String by remember { mutableStateOf("a") }
     val connect  = USBSerial { receivedData ->
@@ -76,7 +76,7 @@ Box( modifier = Modifier
             modifier = Modifier.weight(1f).padding(vertical = 15.dp))
 
         //接続できたら1。できなかったら0
-        Text(text = if(connectCheck==0)"接続されていません" else if(connectCheck==1)"接続完了！" else "エラー！",
+        Text(text = if(connectCheck=="")"接続されていません" else if(connectCheck=="connected")"接続完了！" else "エラー！",
             modifier = Modifier.weight(1f).align(Alignment.CenterHorizontally))
 
         Button(onClick = { connectCheck = connect.open(context) },
@@ -110,7 +110,7 @@ Box( modifier = Modifier
                         onNextButtonClicked() },
                     shape = MaterialTheme.shapes.medium,
                     modifier = Modifier.graphicsLayer {
-                        if (connectCheck==0) {
+                        if (connectCheck!="connected") {
                             this.alpha = 0.2f
                         }
                     }) {
