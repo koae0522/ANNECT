@@ -213,13 +213,13 @@ background(
                             defaultElevation = 10.dp
                         )) {
                         Row(){
-                            DisplayAnima(
-                                body = bodyResource,
-                                eye = eyeResource,
-                                mouth = mouthResource,
-                                accessory = accessoryResource,
-                                modifier = Modifier.size(80.dp)
-                            )
+//                            DisplayAnima(
+//                                body = bodyResource,
+//                                eye = eyeResource,
+//                                mouth = mouthResource,
+//                                accessory = accessoryResource,
+//                                modifier = Modifier.size(80.dp)
+//                            )
                             Column(modifier = Modifier.padding(10.dp)) {
                                 Text(text=message.name,fontSize = 27.sp)
                                 Text(message.text)

@@ -16,7 +16,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -26,26 +28,43 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
+import androidx.compose.runtime.State
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.example.annect.data.DisplayAnima
+import com.example.annect.data.DisplayAnimaNoOffset
 import com.example.annect.data.accessoryData
 import com.example.annect.data.bodyData
 import com.example.annect.data.eyeData
+import com.example.annect.data.eyeOverList
 import com.example.annect.data.mouthData
+
+@Preview(widthDp = 915, heightDp = 412)
+@Composable
+fun CreateScreenPreview(){
+    CreateScreen(
+        body = R.drawable.body1,
+        eye = R.drawable.eye2_under,
+        eyeOver = R.drawable.eye2_over,
+        mouth = R.drawable.mouth1,
+        accessory = R.drawable.accessory1
+    )
+}
 
 //キャラクタを作る画面
 @Composable
 fun CreateScreen(
     onNextButtonClicked: ()->Unit = {}, onArrowButtonClicked: (Int) -> Unit = { },
-    body:Int,eye:Int,mouth:Int,accessory:Int
+    body:Int,eye:Int,eyeOver:Int,mouth:Int,accessory:Int
 ){
     Box(modifier = Modifier
         .fillMaxSize()
@@ -76,9 +95,7 @@ fun CreateScreen(
             Row(){
 
                 //Anima描画
-                DisplayAnima( body,eye,mouth,accessory, modifier = Modifier
-                    .size(280.dp)
-                    .padding(start = 50.dp, top = 20.dp))
+                DisplayAnimaNoOffset( body,eye,eyeOver,mouth,accessory,modifier = Modifier.size(300.dp))
 
                 //パーツリスト
                 Column(modifier = Modifier.padding(start = 50.dp)) {
@@ -163,9 +180,26 @@ fun PartsSelectRow(
                     })
 
             //パーツの画像をリストから表示
+            if(partsName!="め"){
             Image(painter = painterResource(id =partsList[currentParts]),
                 contentDescription = null,
                 modifier = Modifier.size(90.dp), )
+            }else {
+                Box(modifier = Modifier.size(90.dp)){
+                    Row(modifier = Modifier.size(90.dp),horizontalArrangement = Arrangement.Center){
+                        Box(modifier = Modifier.size(30.dp)){
+                            Image(painter = painterResource(id = eyeOverList[currentParts]), contentDescription = null,)
+                            Image(painter = painterResource(id = eyeData[currentParts]), contentDescription = null,)
+                        }
+                        Spacer(modifier = Modifier.size(30.dp))
+                        Box(modifier = Modifier.size(30.dp)){
+                            Image(painter = painterResource(id = eyeOverList[currentParts]), contentDescription = null,)
+                            Image(painter = painterResource(id = eyeData[currentParts]), contentDescription = null,)
+                        }
+                    }
+                }
+
+            }
 
             Icon(painter = painterResource(id = R.drawable.right), contentDescription = null,
                 modifier = Modifier

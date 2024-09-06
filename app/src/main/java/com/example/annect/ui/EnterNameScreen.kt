@@ -28,18 +28,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.annect.data.DisplayAnima
+import com.example.annect.data.DisplayAnimaNoOffset
 
 //名前入力画面
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EnterNameScreen(body:Int,eye:Int,mouth:Int,accessory:Int,
+fun EnterNameScreen(body:Int,eye:Int,eyeOver:Int,mouth:Int,accessory:Int,
                     onNextButtonClicked: ()->Unit = {},onDecideButtonClicked :(String)->Unit = {}){
     var text by remember { mutableStateOf("") }
 
@@ -70,9 +73,7 @@ Box(modifier = Modifier
         Text("Animaの名前を決めよう", style = MaterialTheme.typography.titleLarge, modifier = Modifier.padding(10.dp) )
     }
     Row(){
-        DisplayAnima( body,eye,mouth,accessory, modifier = Modifier
-            .size(280.dp)
-            .padding(20.dp))
+        DisplayAnimaNoOffset(body = body, eye = eye, eyeOver = eyeOver, mouth = mouth, accessory = accessory,modifier = Modifier)
         Column() {
 
             OutlinedTextField(
@@ -117,34 +118,25 @@ Box(modifier = Modifier
                 shape = MaterialTheme.shapes.medium){
                 Text("決定！",fontSize = 20.sp)
             }
-
-
 }
 
 //ポップアップ
-    AnimatedVisibility(decideButtonFlag,enter = scaleIn()) {
+    AnimatedVisibility(decideButtonFlag,) {
         Card(
             Modifier
-                .fillMaxSize()
-                .padding(top = 30.dp, bottom = 30.dp, start = 200.dp, end = 200.dp),
+                .offset(x = LocalConfiguration.current.screenWidthDp.dp / 2,y = (100).dp)
+                .size(width = 350.dp,height = 200.dp),
             elevation = CardDefaults.cardElevation(
                 defaultElevation = 10.dp
             )){
-
             Column( verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(start=50.dp)) {
-
-                Text(text="これがあなたのAnimaです！\nたくさんかわいがってあげましょう！", modifier = Modifier.padding(10.dp),
+                horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(start=20.dp)) {
+                Text(text="あなたのAnimaです!\nかわいがってあげましょう！", modifier = Modifier.padding(top=40.dp),
                     style=MaterialTheme.typography.bodyLarge,textAlign = TextAlign.Center,)
-
-                DisplayAnima(body = body, eye = eye, mouth = mouth, accessory = accessory, modifier = Modifier.size(150.dp))
-
-                Text(text=text, modifier = Modifier.padding(10.dp),style=MaterialTheme.typography.bodyLarge,textAlign = TextAlign.Center,)
-                Button(onClick = { onNextButtonClicked() },
-                    Modifier){
-                    Text("ホームへ")
-
-                }
+                    Button(onClick = { onNextButtonClicked() },
+                        Modifier){
+                        Text("ホームへ")
+                    }
             }
         }
     }
