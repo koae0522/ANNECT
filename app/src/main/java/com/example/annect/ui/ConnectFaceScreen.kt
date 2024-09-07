@@ -3,7 +3,6 @@ package com.example.annect.ui
 import android.content.ContentValues.TAG
 import android.content.Context
 import android.content.Context.*
-import android.graphics.PointF
 import android.media.AudioAttributes
 import android.media.SoundPool
 import android.os.Vibrator
@@ -15,7 +14,9 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.view.CameraController
 import androidx.camera.view.LifecycleCameraController
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.animateOffsetAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -28,23 +29,26 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.PointMode
+import androidx.compose.ui.geometry.times
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -56,20 +60,21 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.LifecycleOwner
 import com.example.annect.R
-import com.example.annect.data.AnimaViewModel
-import com.example.annect.data.ConnectViewModel
+import com.example.annect.ui.animaMotion.eyeAnimation
 import com.example.annect.ui.camera.FaceRecognitionAnalyzer
 import com.example.annect.ui.camera.angleCalc
 import com.example.annect.ui.camera.distanceCalc
 import java.util.Timer
 import kotlin.concurrent.schedule
 import kotlinx.coroutines.*
+import kotlin.math.cos
+import kotlin.math.sin
+
 
 @Composable
-fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String,
-                      context:Context, onHomeButtonClicked:() -> Unit = {}, viewmodel : AnimaViewModel,
-                      connectViewModel: ConnectViewModel,
-                      serialData:Int, interaction:Boolean,displayFace:Boolean
+fun ConnectFaceScreen(body:Int, eye:Int,eyeOver:Int, mouth:Int, accessory:Int, animal:String,
+                      onHomeButtonClicked:() -> Unit = {},
+                      serialData:Int, interaction:Boolean,displayFace:Boolean,
 ){
     //Camera用変数準備
     val context: Context = LocalContext.current
@@ -79,9 +84,12 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
     val screenWidth = remember { mutableIntStateOf(context.resources.displayMetrics.widthPixels) }
     val screenHeight = remember { mutableIntStateOf(context.resources.displayMetrics.heightPixels) }
 
-    cameraController.cameraSelector = CameraSelector.Builder()
-        .requireLensFacing(lensFacing)
-        .build()
+    LaunchedEffect(Unit) {
+        cameraController.cameraSelector = CameraSelector.Builder()
+            .requireLensFacing(lensFacing)
+            .build()
+    }
+
 
     var smileCheck : Boolean by remember { mutableStateOf(false)}
 
@@ -91,23 +99,24 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
     var angle by remember { mutableFloatStateOf(0f) }
     var distance by remember { mutableFloatStateOf(0f) }
 
+    var eyeAnimation by remember { mutableStateOf(eyeAnimation(2f)) }
 
     //カメラの設定の追加ができます
 
     //笑顔判定と顔の現在の角度、位置を最大20で変数に代入するすごい関数。
     // 好きな秒数ごとに反映変更したければanalyzerの中のTHROTTLE_TIMEOUT_MSを変更すること
-    fun imageProc(box: Rect,smile: String,imageWidth:Float,imageHeight:Float){
-        if (smile.toFloat() > 0.5){
-            smileCheck = true
-        }else{
-            smileCheck = false
+    fun imageProc(box: Rect, smile: String, imageWidth: Float, imageHeight: Float) {
+        CoroutineScope(Dispatchers.Default).launch {
+            val newAngle = angleCalc(box, imageWidth, imageHeight, screenWidth.value, screenHeight.value)
+            val newDistance = distanceCalc(box, imageWidth, imageHeight, screenWidth.value, screenHeight.value)
+            val newSmileCheck = smile.toFloat() > 0.5
+
+            withContext(Dispatchers.Main) {
+                smileCheck = newSmileCheck
+                angle = newAngle
+                distance = newDistance
+            }
         }
-
-        angle = angleCalc(box,imageWidth,imageHeight,screenWidth.value,screenHeight.value)
-        distance = distanceCalc(box,imageWidth,imageHeight,screenWidth.value,screenHeight.value)
-
-
-
     }
 
     //ここまで
@@ -140,17 +149,24 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
     }
 
     //サウンド関連の処理
-    lateinit var soundPool: SoundPool
-    //サウンドの設定をカプセル化する　用途と何を再生しているかを設定
-    val audioAttributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_GAME)
-        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-        .build()
-    soundPool = SoundPool.Builder()
-        .setAudioAttributes(audioAttributes)
-        // ストリーム数に応じて
-        .setMaxStreams(10)
-        .build()
+
+    var soundPool by remember {
+        mutableStateOf(SoundPool.Builder().build())
+    }
+
+    LaunchedEffect(Unit) {
+        //サウンドの設定をカプセル化する　用途と何を再生しているかを設定
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+            .build()
+        soundPool = SoundPool.Builder()
+            .setAudioAttributes(audioAttributes)
+            // ストリーム数に応じて
+            .setMaxStreams(10)
+            .build()
+    }
+
     var catNya = 0
     var catNyaun = 0
     var catAmae = 0
@@ -178,6 +194,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
     }
 
     var eyeResource by remember { mutableIntStateOf(eye) }
+    var eyeOverResource by remember { mutableIntStateOf(eyeOver) }
     var mouthResource by remember { mutableIntStateOf(mouth) }
 
     //lirax値を時     間経過で下げるタイマー
@@ -194,66 +211,27 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
         }
     }
 
-    //瞬き改修版タイマー
-    val blinkTimer = remember { Timer() }
-    DisposableEffect(Unit) {
-        //5秒に一回
-        blinkTimer.schedule(100, 5000) {
-            runBlocking {
-                if(!gorogoro){
-                    eyeResource = R.drawable.eye2
-                    //0.5秒間まばたき
-                    delay(500)
-                    eyeResource = eye
-                }
-            }
-        }
-        onDispose {
-            blinkTimer.cancel()
-        }
-    }
 
-    //インタラクション用
-    //2秒に一回何らかの動作をさせることができる
-    val interactionTimer = remember { Timer() }
-    DisposableEffect(Unit) {
-        //2秒に一回
-        blinkTimer.schedule(100, 2000) {
-            runBlocking {
-               if(interaction){
-                   val randomNum = (1..10).random()
-                   when(randomNum){
-                       1 -> {
-                           //耳を動かす処理とか
-                           connect.write("c", 8)
-                           Log.d("interaction","インタラクション：1")
-                       }
-                       2-> {
-                           //しっぽを動かす処理とか
-                           connect.write("d", 8)
-                           Log.d("interaction","インタラクション：2")
-                       }
-                       3->{
-                           //鳴き声の処理とか
-                           connect.write( "e", 8)
-                           soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
-                           Log.d("interaction","インタラクション：3")
-                       }
-                   }
-               }
-            }
-        }
-        onDispose {
-          interactionTimer.cancel()
-        }
+    LaunchedEffect(Unit) {
+        eyeAnimation.startBlink()
     }
+    val blinking by eyeAnimation.blinking.collectAsState()
+    val sleeping by eyeAnimation.sleeping.collectAsState()
+    eyeResource = if (blinking||sleeping) R.drawable.eye_mabataki else eye
+    eyeOverResource = if (blinking||sleeping) R.drawable.eye_mabataki else eyeOver
+    mouthResource = if (sleeping) R.drawable.mouth2 else mouth
+    val alpha = animateFloatAsState(
+        targetValue = if (blinking) 0f else 1f,
+        animationSpec = tween(durationMillis = 100)
+    )
+
 
     if(lirax>=6 && !gorogoro && interaction){
         //ゴロゴロ時の処理
         gorogoro=true
         soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
         vibrator.vibrate(longArrayOf(0, 10, 10), 1)
-        eyeResource=R.drawable.eye2
+        eyeResource=R.drawable.eye2_over
         mouthResource=R.drawable.mouth2
         Log.d("interaction","ゴロゴロ開始")
 
@@ -284,47 +262,47 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
     }
 
     if (smileCheck) {
-        mouthResource = R.drawable.mouth1
+        mouthResource = R.drawable.mouth2
     }else{
-        mouthResource = mouth
+        //mouthResource = mouth
     }
 
 //
 
     Box(){
-        AndroidView(
-            modifier = Modifier
-                .fillMaxSize()
-            ,
-            factory = { context ->
-                PreviewView(context).apply {
-                    layoutParams = LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT
-                    )
-                    setBackgroundColor(android.graphics.Color.BLACK)
-                    implementationMode = PreviewView.ImplementationMode.COMPATIBLE
-                    scaleType = PreviewView.ScaleType.FILL_START
-                }.also { previewView ->
-                    startFaceRecognition(
-                        context = context,
-                        cameraController = cameraController,
-                        lifecycleOwner = lifecycleOwner,
-                        previewView = previewView,
-                        onDetectedTextUpdated = ::imageProc
-                    )
+        if(!sleeping) {
+            AndroidView(
+                modifier = Modifier
+                    .fillMaxSize(),
+                factory = { context ->
+                    PreviewView(context).apply {
+                        layoutParams = LinearLayout.LayoutParams(
+                            ViewGroup.LayoutParams.MATCH_PARENT,
+                            ViewGroup.LayoutParams.MATCH_PARENT
+                        )
+                        setBackgroundColor(android.graphics.Color.BLACK)
+                        implementationMode = PreviewView.ImplementationMode.COMPATIBLE
+                        scaleType = PreviewView.ScaleType.FILL_START
+                    }.also { previewView ->
+                        startFaceRecognition(
+                            context = context,
+                            cameraController = cameraController,
+                            lifecycleOwner = lifecycleOwner,
+                            previewView = previewView,
+                            onDetectedTextUpdated = ::imageProc
+                        )
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 
     //UI
     Box(modifier = Modifier
         .fillMaxSize()
-        .background(color = backgroundColor),
+        .background(color = backgroundColor)
+        ,
         contentAlignment = Alignment.Center){
-
-
         //ひげ
         if(animal=="ねこ") {
             Image(painter = painterResource(id = R.drawable.hige),
@@ -353,18 +331,57 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
 //
 //        }
         //め
-        Image(painter = painterResource(id = eyeResource),
-            contentDescription = null,
-            contentScale = ContentScale.FillWidth,
-            modifier= Modifier
-                .fillMaxSize()
-                .graphicsLayer {
-                    scaleX = 2F
-                    scaleY = 2F
-                }
-                .offset(y = (70).dp)
-
-        )
+        Row(modifier = Modifier
+            .align(androidx.compose.ui.Alignment.Center)
+            .padding(bottom = 60.dp)){
+            Box(modifier = Modifier.size(180.dp)){
+                Image(painter = painterResource(id = eyeResource), contentDescription = null,modifier = Modifier
+                    .alpha(alpha.value))
+                Image(painter = painterResource(id = eyeOverResource), contentDescription = null,
+                    modifier = Modifier
+                        .alpha(alpha.value)
+                        .offset(
+                            animateOffsetAsState(
+                                targetValue = Offset(
+                                    distance * cos(Math.toRadians(angle.toDouble())).toFloat(),
+                                    distance * sin(Math.toRadians(angle.toDouble())).toFloat()
+                                ), label = ""
+                            ).value.x.dp,
+                            animateOffsetAsState(
+                                targetValue = Offset(
+                                    distance * cos(Math.toRadians(angle.toDouble())).toFloat(),
+                                    -distance * sin(Math.toRadians(angle.toDouble())).toFloat()
+                                ), label = ""
+                            ).value.y.dp,
+                        )
+                )
+                Log.d("akane", (distance * cos(angle).toFloat()).toString()+"\n"+(distance * sin(angle).toFloat()).toString())
+            }
+            Spacer(modifier = Modifier.size(150.dp))
+            Box(modifier = Modifier.size(180.dp)
+                ){
+                Image(painter = painterResource(id = eyeResource), contentDescription = null,modifier = Modifier
+                    .alpha(alpha.value))
+                Image(painter = painterResource(id = eyeOverResource), contentDescription = null,
+                    modifier = Modifier
+                        .alpha(alpha.value)
+                        .offset(
+                            animateOffsetAsState(
+                                targetValue = Offset(
+                                    distance * cos(Math.toRadians(angle.toDouble())).toFloat(),
+                                    distance * sin(Math.toRadians(angle.toDouble())).toFloat()
+                                ), label = ""
+                            ).value.x.dp,
+                            animateOffsetAsState(
+                                targetValue = Offset(
+                                    distance * cos(Math.toRadians(angle.toDouble())).toFloat(),
+                                    -distance * sin(Math.toRadians(angle.toDouble())).toFloat()
+                                ), label = ""
+                            ).value.y.dp,
+                        )
+                )
+            }
+        }
 
         //くち
         Image(painter = painterResource(id = mouthResource),
@@ -400,12 +417,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
                             //上側を触った時の処理
                             onPress = {
                                 // 押してる
-                                mouthResource = R.drawable.mouth1
-
                                 tryAwaitRelease()
-
-                                // 離した
-                                mouthResource = mouth
                                 test = connect.write("t", 8)
                                 test += "t"
                                 //connectUistate.serialData += 1
@@ -444,18 +456,14 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
                             //下側を触った時の処理
                             onTap = {
                                 connect.write("s", 8)
-                                //ゴロゴロストップの処理
-//                                gorogoro = false
-
-
-//                                vibrator.cancel()
-//                                mouthResource = mouth
+                                eyeAnimation.resetSleep()
+                                Log.d("tonkatu", "clicked")
                                 if (animal == "ねこ") {
-                                    when ((1..20).random()) {
-                                        1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
-                                        2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
-                                        3 -> lirax++
-                                    }
+//                                    when ((1..20).random()) {
+//                                        1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+//                                        2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+//                                        3 -> lirax++
+//                                    }
                                 }
                             }
                         )
@@ -466,7 +474,7 @@ fun ConnectFaceScreen(body:Int, eye:Int, mouth:Int, accessory:Int, animal:String
                 }
             }
 
-            Text(text = "angle:$angle,distance:$distance",modifier = Modifier.align(Alignment.TopStart))
+            Text(text = "angle:$angle,distance:$distance,sleep:$sleeping",modifier = Modifier.align(Alignment.TopStart))
 
         }
 
@@ -482,6 +490,7 @@ private fun startFaceRecognition(
     onDetectedTextUpdated: (Rect, String,Float,Float) -> Unit
 ) {
 
+
     cameraController.imageAnalysisTargetSize = CameraController.OutputSize(AspectRatio.RATIO_16_9)
     cameraController.setImageAnalysisAnalyzer(
         ContextCompat.getMainExecutor(context),
@@ -491,29 +500,3 @@ private fun startFaceRecognition(
     cameraController.bindToLifecycle(lifecycleOwner)
     previewView.controller = cameraController
 }
-
-//まばたき
-//    val timer1 = remember { Timer() }
-//    DisposableEffect(Unit) {
-//        timer1.schedule(100, 1000) {
-//            if(gorogoro==false){
-//                eyeResource=eye
-//                Log.d(ContentValues.TAG,"a")
-//            }
-//        }
-//        onDispose {
-//            timer1.cancel()
-//        }
-//    }
-//    val timer2 = remember { Timer() }
-//    DisposableEffect(Unit) {
-//        timer2.schedule(100, 5000) {
-//            if(gorogoro==false) {
-//                eyeResource = R.drawable.eye2
-//                Log.d(ContentValues.TAG, "b")
-//            }
-//        }
-//        onDispose {
-//            timer2.cancel()
-//        }
-//    }

@@ -120,7 +120,7 @@ fun AnnectScreen(
                 //viewModelから値を渡す
                 name = animaUiState.name,
                 body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
-                interaction = connectUiState.interaction, displayFace = connectUiState.displayFace)
+                interaction = connectUiState.interaction, eyeOver = animaUiState.eyeOver, displayFace = connectUiState.displayFace)
 
         }
 
@@ -130,7 +130,7 @@ fun AnnectScreen(
                 //次へを押したら名前入力へ
                 onNextButtonClicked = {navController.navigate("EnterName")},
                 //パーツ
-                body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
+                body = animaUiState.body, eye = animaUiState.eye,eyeOver = animaUiState.eyeOver, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
                 //矢印が押された時の関数を呼び出す
                 onArrowButtonClicked = {animaViewModel.ChangeAnimaParts(it)})
         }
@@ -139,7 +139,7 @@ fun AnnectScreen(
         composable(route = AnnectScreen.EnterName.name){
             EnterNameScreen(
                 //uiStateからAnimaのパーツを渡す
-                body = animaUiState.body, eye = animaUiState.eye, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
+                body = animaUiState.body, eye = animaUiState.eye,eyeOver = animaUiState.eyeOver, mouth = animaUiState.mouth, accessory = animaUiState.accessory,
                 onDecideButtonClicked = {
                     //決定ボタン　ViewModel更新
                     animaViewModel.ChangeAnimaName(it)
@@ -169,15 +169,15 @@ fun AnnectScreen(
            ConnectScreen(onHomeButtonClicked = {navController.navigate("Home")},
                onCatButtonClicked = {
                    connectViewModel.ChangeAnimalName("ねこ")
-                   navController.navigate("ConnectAnimation")
+                   navController.navigate("ConnectFace")
                  },
                onUnicornButtonClicked = {
                    connectViewModel.ChangeAnimalName("ユニコーン")
-                   navController.navigate("ConnectAnimation")
+                   navController.navigate("ConnectFace")
                 },
                onUsagiButtonClicked = {
                    connectViewModel.ChangeAnimalName("うさぎ")
-                   navController.navigate("ConnectAnimation")
+                   navController.navigate("ConnectFace")
                }
 
            )
@@ -217,16 +217,15 @@ fun AnnectScreen(
         composable(route=AnnectScreen.ConnectFace.name){
             ConnectFaceScreen( body = animaUiState.body,
                 eye = animaUiState.eye,
+                eyeOver = animaUiState.eyeOver,
                 mouth = animaUiState.mouth,
                 accessory = animaUiState.accessory,
                 animal = connectUiState.animal,
-                context = context,
                 onHomeButtonClicked = { navController.navigate("Home") },
-                viewmodel = animaViewModel,
-                connectViewModel = connectViewModel,
                 serialData = connectUiState.serialData,
                 interaction = connectUiState.interaction,
-                displayFace = connectUiState.displayFace)
+                displayFace = connectUiState.displayFace,
+            )
         }
 
         //ConnectAnimation画面

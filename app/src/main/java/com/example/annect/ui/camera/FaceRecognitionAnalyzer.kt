@@ -24,7 +24,7 @@ class FaceRecognitionAnalyzer(
 ) : ImageAnalysis.Analyzer {
 
     companion object {
-        const val THROTTLE_TIMEOUT_MS = 1_000L
+        const val THROTTLE_TIMEOUT_MS = 1000.toLong()
     }
 
     private val scope: CoroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
