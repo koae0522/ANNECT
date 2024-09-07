@@ -81,8 +81,8 @@ fun ConnectFaceScreen(body:Int, eye:Int,eyeOver:Int, mouth:Int, accessory:Int, a
     val lensFacing = CameraSelector.LENS_FACING_FRONT
     val lifecycleOwner: LifecycleOwner = LocalLifecycleOwner.current
     val cameraController: LifecycleCameraController = remember { LifecycleCameraController(context) }
-    val screenWidth = remember { mutableIntStateOf(context.resources.displayMetrics.widthPixels/2) }
-    val screenHeight = remember { mutableIntStateOf(context.resources.displayMetrics.heightPixels/2) }
+    val screenWidth = remember { mutableIntStateOf(context.resources.displayMetrics.widthPixels) }
+    val screenHeight = remember { mutableIntStateOf(context.resources.displayMetrics.heightPixels) }
 
     LaunchedEffect(Unit) {
         cameraController.cameraSelector = CameraSelector.Builder()
