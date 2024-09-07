@@ -149,17 +149,24 @@ fun ConnectFaceScreen(body:Int, eye:Int,eyeOver:Int, mouth:Int, accessory:Int, a
     }
 
     //サウンド関連の処理
-    lateinit var soundPool: SoundPool
-    //サウンドの設定をカプセル化する　用途と何を再生しているかを設定
-    val audioAttributes = AudioAttributes.Builder()
-        .setUsage(AudioAttributes.USAGE_GAME)
-        .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
-        .build()
-    soundPool = SoundPool.Builder()
-        .setAudioAttributes(audioAttributes)
-        // ストリーム数に応じて
-        .setMaxStreams(10)
-        .build()
+
+    var soundPool by remember {
+        mutableStateOf(SoundPool.Builder().build())
+    }
+
+    LaunchedEffect(Unit) {
+        //サウンドの設定をカプセル化する　用途と何を再生しているかを設定
+        val audioAttributes = AudioAttributes.Builder()
+            .setUsage(AudioAttributes.USAGE_GAME)
+            .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+            .build()
+        soundPool = SoundPool.Builder()
+            .setAudioAttributes(audioAttributes)
+            // ストリーム数に応じて
+            .setMaxStreams(10)
+            .build()
+    }
+
     var catNya = 0
     var catNyaun = 0
     var catAmae = 0
@@ -450,13 +457,13 @@ fun ConnectFaceScreen(body:Int, eye:Int,eyeOver:Int, mouth:Int, accessory:Int, a
                             onTap = {
                                 connect.write("s", 8)
                                 eyeAnimation.resetSleep()
-                                Log.d("tonkatu","clicked")
+                                Log.d("tonkatu", "clicked")
                                 if (animal == "ねこ") {
-                                    when ((1..20).random()) {
-                                        1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
-                                        2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
-                                        3 -> lirax++
-                                    }
+//                                    when ((1..20).random()) {
+//                                        1 -> soundPool.play(catNya, 1.0f, 1.0f, 0, 0, 1.0f)
+//                                        2 -> soundPool.play(catNyaun, 1.0f, 1.0f, 0, 0, 1.0f)
+//                                        3 -> lirax++
+//                                    }
                                 }
                             }
                         )

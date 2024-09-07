@@ -65,7 +65,7 @@ fun distanceCalc(
     val length = if (((sqrt(
             (refactorX - (screenWidth / 2)).toDouble()
                 .pow(2.0) + (refactorY - (screenHeight / 2)).toDouble().pow(2.0)
-        ).toFloat()) / maxLength) * 20 < 4.0f
+        ).toFloat()) / maxLength) * 20 < 5.0f
     ) {
         0f
     } else {
